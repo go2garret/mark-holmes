@@ -76,56 +76,84 @@ export default function Home() {
 
     // Nav scroll
     const navbar = document.getElementById('navbar');
-    window.addEventListener('scroll', () => {
-      navbar.classList.toggle('scrolled', window.scrollY > 40);
-    });
+
+    if (navbar) {
+      window.addEventListener('scroll', () => {
+        navbar.classList.toggle('scrolled', window.scrollY > 40);
+      });
+    }
 
     // Scroll reveal
-    const reveals = document.querySelectorAll('.reveal');
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('visible');
-          observer.unobserve(e.target);
+    const reveals = document.querySelectorAll<HTMLElement>('.reveal');
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          (entry.target as HTMLElement).classList.add('visible');
+          observer.unobserve(entry.target);
         }
       });
     }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+
     reveals.forEach(el => observer.observe(el));
 
-    // Parallax hero on scroll
-    const heroBg = document.querySelector('.hero-bg');
-    window.addEventListener('scroll', () => {
-      const y = window.scrollY;
-      if (y < window.innerHeight) {
-        heroBg.style.transform = `scale(1.08) translateY(${y * 0.3}px)`;
-      }
-    }, { passive: true });
 
+    // Parallax hero on scroll
+    const heroBg = document.querySelector<HTMLElement>('.hero-bg');
+
+    if (heroBg) {
+      window.addEventListener('scroll', () => {
+        const y = window.scrollY;
+
+        if (y < window.innerHeight) {
+          heroBg.style.transform = `scale(1.08) translateY(${y * 0.3}px)`;
+        }
+      }, { passive: true });
+    }
+
+
+    // Spotlight elements
     const spotlightOutlineWrapper = document.getElementById('spotlight-outline-wrapper');
     const spotlightFillBrightWrapper = document.getElementById('spotlight-fill-bright-wrapper');
     const spotlightCursorDot = document.getElementById('spotlight-cursor-dot');
     const spotlightScene = document.getElementById('spotlight-scene');
 
-    const SPOTLIGHT_RADIUS = 180; // spotlight radius in px
+    if (
+      !spotlightOutlineWrapper ||
+      !spotlightFillBrightWrapper ||
+      !spotlightCursorDot ||
+      !spotlightScene
+    ) return;
 
-    let spotlightMouseX = -9999, spotlightMouseY = -9999;
-    let spotlightCurrentX = -9999, spotlightCurrentY = -9999;
-    let spotlightRaf;
+    const SPOTLIGHT_RADIUS = 180;
 
-    function spotlightLerp(a, b, t) { return a + (b - a) * t; }
+    let spotlightMouseX = -9999;
+    let spotlightMouseY = -9999;
+
+    let spotlightCurrentX = -9999;
+    let spotlightCurrentY = -9999;
+
+    let spotlightRaf: number;
+
+    function spotlightLerp(a: number, b: number, t: number) {
+      return a + (b - a) * t;
+    }
 
     function spotlightUpdateMask() {
+      if (!spotlightOutlineWrapper) return;
+
       const rect = spotlightOutlineWrapper.getBoundingClientRect();
+
       const relX = spotlightCurrentX - rect.left;
       const relY = spotlightCurrentY - rect.top;
 
       const gradient = `radial-gradient(circle ${SPOTLIGHT_RADIUS}px at ${relX}px ${relY}px, black 0%, black 30%, transparent 100%)`;
 
-      spotlightFillBrightWrapper.style.webkitMaskImage = gradient;
-      spotlightFillBrightWrapper.style.maskImage = gradient;
+      (spotlightFillBrightWrapper as HTMLElement).style.webkitMaskImage = gradient;
+      (spotlightFillBrightWrapper as HTMLElement).style.maskImage = gradient;
 
-      spotlightOutlineWrapper.style.webkitMaskImage = gradient;
-      spotlightOutlineWrapper.style.maskImage = gradient;
+      (spotlightOutlineWrapper as HTMLElement).style.webkitMaskImage = gradient;
+      (spotlightOutlineWrapper as HTMLElement).style.maskImage = gradient;
     }
 
     function spotlightAnimate() {
@@ -134,8 +162,8 @@ export default function Home() {
 
       spotlightUpdateMask();
 
-      spotlightCursorDot.style.left = spotlightMouseX + 'px';
-      spotlightCursorDot.style.top = spotlightMouseY + 'px';
+      (spotlightCursorDot as HTMLElement).style.left = spotlightMouseX + 'px';
+      (spotlightCursorDot as HTMLElement).style.top = spotlightMouseY + 'px';
 
       spotlightRaf = requestAnimationFrame(spotlightAnimate);
     }
@@ -148,22 +176,27 @@ export default function Home() {
     document.addEventListener('mouseleave', () => {
       spotlightMouseX = -9999;
       spotlightMouseY = -9999;
-      spotlightCursorDot.style.opacity = '0';
+
+      (spotlightCursorDot as HTMLElement).style.opacity = '0';
     });
 
     document.addEventListener('mouseenter', () => {
-      spotlightCursorDot.style.opacity = '0.8';
+      (spotlightCursorDot as HTMLElement).style.opacity = '0.8';
     });
 
     spotlightAnimate();
+
 
     // Mobile menu toggle logic
     const navHamburger = document.getElementById('navHamburger');
     const mobileMenu = document.getElementById('mobileMenu');
     const mobileMenuClose = document.getElementById('mobileMenuClose');
-    if (navHamburger && mobileMenu) {
+
+    if (navHamburger && mobileMenu && mobileMenuClose) {
+
       const toggleMenu = () => {
         const isOpen = mobileMenu.classList.contains('open');
+
         if (isOpen) {
           mobileMenu.classList.remove('open');
           document.body.style.overflow = '';
@@ -175,18 +208,17 @@ export default function Home() {
 
       navHamburger.addEventListener('click', toggleMenu);
       mobileMenuClose.addEventListener('click', toggleMenu);
-      mobileMenu.querySelectorAll('a').forEach(link => {
+
+      mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach(link => {
         link.addEventListener('click', toggleMenu);
       });
 
-      // Close menu when clicking outside
       mobileMenu.addEventListener('click', (e) => {
         if (e.target === mobileMenu) {
           toggleMenu();
         }
       });
     }
-  }, []);
 
   return (
     <>
