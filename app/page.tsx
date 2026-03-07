@@ -242,7 +242,11 @@ export default function Home() {
         <a href="#" className="nav-logo"><span></span>Mark Holmes</a>
         {/* mobile hamburger toggle (appears on small screens) */}
         <button className="nav-hamburger" id="navHamburger" aria-label="Open menu">
-          <span></span><span></span><span></span>
+          <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <line x1="0" y1="1" x2="20" y2="1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="8" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+          </svg>
         </button>
         <ul className="nav-links">
           <li><a href="#showcase">Work</a></li>
