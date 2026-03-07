@@ -418,7 +418,7 @@ h2 strong {
   position: relative;
   flex: 0 0 auto;
   overflow: hidden;
-  cursor: none;
+  cursor: pointer;
 }
 .showcase-card:nth-child(1) { width: 24vw; height: 540px; }
 .showcase-card:nth-child(2) { width: 20vw; height: 540px; }
@@ -1166,6 +1166,7 @@ footer::before {
   cursor: none;
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
+  z-index: 50;
 }
 
 .modal-form {
@@ -1233,17 +1234,18 @@ footer::before {
     border-radius: 8px;
     width: 100vw;
     /* max-width: 500px; */
-    padding: 40px;
     transition: transform .5s;
     position: relative;
     transform: translateY(40px);
     height: calc(100vh - 50px);
+    top: 50px;
     display: flex;
     justify-content: center;
     align-items: center;
-    top: 50px;
 }
 
 .modal-overlay.open .modal-content {
   transform: translateY(0);
 }
+
+

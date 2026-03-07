@@ -4,6 +4,47 @@ import { useEffect, useState } from 'react';
 
 export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [selectedProduction, setSelectedProduction] = useState(null);
+
+  const productions = [
+    {
+      id: 1,
+      title: "The Outsiders",
+      venue: "The Old Globe",
+      year: "2024",
+      type: "Broadway Transfer",
+      description: "A powerful adaptation of S.E. Hinton's classic novel, capturing the raw energy and emotional depth of teenage rebellion through cinematic storytelling and live performance documentation.",
+      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+    },
+    {
+      id: 2,
+      title: "The Untitled Unauthorized Hunter S. Thompson Musical",
+      venue: "La Jolla Playhouse",
+      year: "2023",
+      type: "World Premiere",
+      description: "An electrifying musical journey through the mind of gonzo journalism's legendary figure, blending rock music, theatrical innovation, and immersive storytelling techniques.",
+      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+    },
+    {
+      id: 3,
+      title: "Always Something There",
+      venue: "Balboa Theatre",
+      year: "2024",
+      type: "Archival Documentation",
+      description: "A meticulously preserved record of this contemporary theater piece, showcasing our expertise in capturing intimate theatrical moments with professional-grade equipment.",
+      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+    },
+    {
+      id: 4,
+      title: "The Lorax",
+      venue: "The Old Globe",
+      year: "2018",
+      type: "Archival Documentation",
+      description: "Preserving the magic of this beloved Dr. Seuss adaptation, featuring innovative puppetry and environmental themes brought to life through expert cinematography.",
+      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+    }
+  ];
 
   useEffect(() => {
     // Cursor tracking
@@ -11,20 +52,27 @@ export default function Home() {
     const ring = document.getElementById('cursorRing');
     let mx = 0, my = 0, rx = 0, ry = 0;
 
-    document.addEventListener('mousemove', e => {
-      mx = e.clientX; my = e.clientY;
-      cursor.style.left = mx + 'px';
-      cursor.style.top  = my + 'px';
-    });
+    if (cursor && ring) {
+      const cursorEl = cursor;
+      const ringEl = ring;
 
-    function animateRing() {
-      rx += (mx - rx) * 0.14;
-      ry += (my - ry) * 0.14;
-      ring.style.left = rx + 'px';
-      ring.style.top  = ry + 'px';
-      requestAnimationFrame(animateRing);
+      document.addEventListener('mousemove', (e) => {
+        mx = e.clientX;
+        my = e.clientY;
+
+        cursorEl.style.left = mx + 'px';
+        cursorEl.style.top  = my + 'px';
+      });
+
+      function animateRing() {
+        rx += (mx - rx) * 0.14;
+        ry += (my - ry) * 0.14;
+        ringEl.style.left = rx + 'px';
+        ringEl.style.top  = ry + 'px';
+        requestAnimationFrame(animateRing);
+      }
+      animateRing();
     }
-    animateRing();
 
     // Nav scroll
     const navbar = document.getElementById('navbar');
@@ -229,7 +277,7 @@ export default function Home() {
         </div>
 
         <div className="showcase-strip">
-          <div className="showcase-card ">
+          <div className="showcase-card " onClick={() => { setSelectedProduction(productions[0]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://static01.nyt.com/images/2024/04/11/multimedia/11outisders-review1-jplc/11outisders-review1-jplc-articleLarge.jpg?quality=75&auto=webp&disable=upscale" alt="The Outsiders" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -242,7 +290,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="showcase-card  reveal-delay-1">
+          <div className="showcase-card  reveal-delay-1" onClick={() => { setSelectedProduction(productions[1]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://res.cloudinary.com/signature-theatre/image/upload/c_fill%2Cg_face%2Ch_1204%2Cw_2140/f_auto/q_auto/v1749741852/9.George_Abud_Nixon_and_the_cast_of_The_Untitled_Unauthorized_Hunter_S._Thompson_Musical_at_Signature_Theatre._Photo_by_Daniel_Rader?_a=BAAAV6DQ" alt="Hunter S. Thompson" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -255,7 +303,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="showcase-card  reveal-delay-2">
+          <div className="showcase-card  reveal-delay-2" onClick={() => { setSelectedProduction(productions[2]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://cdn.prod.website-files.com/6501ca9890bd9fd3f1044d12/685c0bbfa8c73ffbaac06110_Press%20Photo%20%2318.avif" alt="Always Something There" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -268,7 +316,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="showcase-card  reveal-delay-3">
+          <div className="showcase-card  reveal-delay-3" onClick={() => { setSelectedProduction(productions[3]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://www.theoldglobe.org/link/1dd6434ca76e4389b300dc5a0a79335e.aspx" alt="The Lorax" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -512,7 +560,7 @@ export default function Home() {
 
       {/* Modal */}
       <div className={`modal-overlay ${isModalOpen ? 'open' : ''}`} onClick={() => setIsModalOpen(false)}>
-        <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <div className="modal-content p-8" onClick={(e) => e.stopPropagation()}>
           <button className="modal-close" onClick={() => setIsModalOpen(false)}>&times;</button>
           <form className="modal-form">
             <h2>Book a Production</h2>
@@ -521,6 +569,63 @@ export default function Home() {
             <textarea placeholder="Message" required></textarea>
             <button type="submit" className="btn-primary">Submit</button>
           </form>
+        </div>
+      </div>
+
+      {/* Video Modal */}
+      <div className={`fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isVideoModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsVideoModalOpen(false)}>
+        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
+          <button className="absolute top-4 right-4 text-white hover:text-[#f2be60] text-2xl z-50 w-8 h-8 flex items-center justify-center transition-colors" onClick={() => setIsVideoModalOpen(false)}>&times;</button>
+
+          {selectedProduction ? (
+            <div className="grid grid-cols-1 lg:grid-cols-5 min-h-[600px]">
+              {/* Production Info Section */}
+              <div className="lg:col-span-2 bg-black p-8 lg:p-12 flex flex-col justify-center border-r border-[#f2be60]/10">
+                <div className="mb-8">
+                  <span className="text-[#f2be60] text-xs font-medium tracking-wider uppercase mb-4 block">{selectedProduction.venue} · {selectedProduction.year}</span>
+                  <h2 className="text-white text-3xl lg:text-4xl font-serif font-normal leading-tight mb-3">{selectedProduction.title}</h2>
+                  <span className="text-gray-400 text-sm font-medium tracking-wide uppercase">{selectedProduction.type}</span>
+                </div>
+
+                <div className="mb-10">
+                  <p className="text-gray-300 text-base leading-relaxed">{selectedProduction.description}</p>
+                </div>
+
+                <div className="space-y-4">
+                  <div className="flex justify-between items-center py-3 border-b border-gray-800">
+                    <span className="text-[#f2be60] text-sm font-medium tracking-wide uppercase">Venue</span>
+                    <span className="text-white text-sm">{selectedProduction.venue}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-gray-800">
+                    <span className="text-[#f2be60] text-sm font-medium tracking-wide uppercase">Year</span>
+                    <span className="text-white text-sm">{selectedProduction.year}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-3 border-b border-gray-800 last:border-b-0">
+                    <span className="text-[#f2be60] text-sm font-medium tracking-wide uppercase">Type</span>
+                    <span className="text-white text-sm">{selectedProduction.type}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Video Section */}
+              <div className="lg:col-span-3 bg-[#0D0C0B] flex items-center justify-center p-8">
+                <div className="w-full max-w-2xl aspect-video">
+                  <iframe
+                    className="w-full h-full rounded-lg shadow-2xl"
+                    src={selectedProduction.videoUrl}
+                    title={`${selectedProduction.title} - YouTube video player`}
+                    frameBorder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <div className="flex items-center justify-center min-h-[400px] text-white">
+              <p>Loading...</p>
+            </div>
+          )}
         </div>
       </div>
     </>
