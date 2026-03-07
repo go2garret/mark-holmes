@@ -3,9 +3,19 @@
 import { useEffect, useState } from 'react';
 
 export default function Home() {
+  type Production = {
+    id: number
+    title: string
+    venue: string
+    year: string
+    type: string
+    description: string
+    videoUrl: string
+  };
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [selectedProduction, setSelectedProduction] = useState(null);
+  const [selectedProduction, setSelectedProduction] = useState<Production | null>(null);
 
   const productions = [
     {
