@@ -624,54 +624,167 @@ export default function Home() {
         <div className={`bg-black rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
           <button className="absolute top-4 right-4 text-white hover:text-[#f2be60] text-2xl z-50 w-8 h-8 flex items-center justify-center transition-colors" onClick={() => setIsVideoModalOpen(false)}>&times;</button>
 
-          {selectedProduction ? (
-            <div className="grid grid-cols-1 lg:grid-cols-5 min-h-[600px]">
-              {/* Production Info Section */}
-              <div className="lg:col-span-2 bg-black p-8 lg:p-12 flex flex-col justify-center border-r border-[#f2be60]/10">
-                <div className="mb-8">
-                  <span className="text-[#f2be60] text-xs font-medium tracking-wider uppercase mb-4 block">{selectedProduction.venue} · {selectedProduction.year}</span>
-                  <h2 className="text-white text-3xl lg:text-4xl font-serif font-normal leading-tight mb-3">{selectedProduction.title}</h2>
-                  <span className="text-gray-400 text-sm font-medium tracking-wide uppercase">{selectedProduction.type}</span>
-                </div>
+            {selectedProduction ? (
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr', minHeight: '520px' }}
+                    className="modal-inner-grid">
 
-                <div className="mb-10">
-                  <p className="text-gray-300 text-base leading-relaxed">{selectedProduction.description}</p>
-                </div>
+                  {/* ── LEFT: Info ── */}
+                  <div style={{
+                    padding: '3rem 3rem 2.5rem',
+                    borderBottom: '1px solid rgba(242,190,96,0.08)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0',
+                  }}
+                    className="modal-info-pane"
+                  >
+                    {/* eyebrow */}
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '0.5rem',
+                      marginBottom: '1rem',
+                    }}>
+                      <span style={{
+                        display: 'inline-block',
+                        width: '18px',
+                        height: '1px',
+                        background: '#f2be60',
+                        flexShrink: 0,
+                      }} />
+                      <span style={{
+                        color: '#f2be60',
+                        fontSize: '0.65rem',
+                        fontWeight: 600,
+                        letterSpacing: '0.18em',
+                        textTransform: 'uppercase',
+                      }}>
+                        {selectedProduction.venue} &nbsp;·&nbsp; {selectedProduction.year}
+                      </span>
+                    </div>
 
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center py-3 border-b border-gray-800">
-                    <span className="text-[#f2be60] text-sm font-medium tracking-wide uppercase">Venue</span>
-                    <span className="text-white text-sm">{selectedProduction.venue}</span>
+                    {/* title */}
+                    <h2 style={{
+                      margin: '0 0 0.35rem',
+                      fontSize: 'clamp(1.6rem, 3vw, 2.4rem)',
+                      fontWeight: 400,
+                      lineHeight: 1.15,
+                      color: '#F5F0E8',
+                      fontFamily: 'Georgia, "Times New Roman", serif',
+                      letterSpacing: '-0.01em',
+                    }}>
+                      {selectedProduction.title}
+                    </h2>
+
+                    {/* type badge */}
+                    <span style={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: '6px',
+                      color: 'rgba(255,255,255,0.35)',
+                      fontSize: '0.7rem',
+                      letterSpacing: '0.14em',
+                      textTransform: 'uppercase',
+                      fontWeight: 500,
+                      marginBottom: '1.75rem',
+                    }}>
+                      <span style={{
+                        width: '5px', height: '5px', borderRadius: '50%',
+                        background: 'rgba(242,190,96,0.5)', flexShrink: 0,
+                      }} />
+                      {selectedProduction.type}
+                    </span>
+
+                    {/* description */}
+                    <p style={{
+                      margin: '0 0 2rem',
+                      color: 'rgba(245,240,232,0.55)',
+                      fontSize: '0.875rem',
+                      lineHeight: 1.75,
+                      maxWidth: '42ch',
+                    }}>
+                      {selectedProduction.description}
+                    </p>
+
+                    {/* meta table */}
+                    <div style={{
+                      marginTop: 'auto',
+                      borderTop: '1px solid rgba(255,255,255,0.06)',
+                      paddingTop: '1.5rem',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0',
+                    }}>
+                      {[
+                        { label: 'Venue', value: selectedProduction.venue },
+                        { label: 'Year',  value: selectedProduction.year  },
+                        { label: 'Type',  value: selectedProduction.type  },
+                      ].map(({ label, value }) => (
+                        <div key={label} style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '0.75rem 0',
+                          borderBottom: '1px solid rgba(255,255,255,0.05)',
+                        }}>
+                          <span style={{
+                            color: 'rgba(242,190,96,0.6)',
+                            fontSize: '0.65rem',
+                            letterSpacing: '0.15em',
+                            textTransform: 'uppercase',
+                            fontWeight: 600,
+                          }}>
+                            {label}
+                          </span>
+                          <span style={{
+                            color: 'rgba(245,240,232,0.7)',
+                            fontSize: '0.8rem',
+                            letterSpacing: '0.02em',
+                          }}>
+                            {value}
+                          </span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b border-gray-800">
-                    <span className="text-[#f2be60] text-sm font-medium tracking-wide uppercase">Year</span>
-                    <span className="text-white text-sm">{selectedProduction.year}</span>
+
+                  {/* ── RIGHT: Video ── */}
+                  <div style={{
+                    background: '#050504',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: '2.5rem',
+                  }}
+                    className="modal-video-pane"
+                  >
+                    <div style={{
+                      width: '100%',
+                      aspectRatio: '16/9',
+                      borderRadius: '1px',
+                      overflow: 'hidden',
+                      boxShadow: '0 20px 60px rgba(0,0,0,0.6)',
+                      border: '1px solid rgba(255,255,255,0.05)',
+                    }}>
+                      <iframe
+                        style={{ width: '100%', height: '100%', display: 'block' }}
+                        src={isVideoModalOpen ? selectedProduction.videoUrl : ''}
+                        title={`${selectedProduction.title} – video`}
+                        frameBorder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowFullScreen
+                      />
+                    </div>
                   </div>
-                  <div className="flex justify-between items-center py-3 border-b border-gray-800 last:border-b-0">
-                    <span className="text-[#f2be60] text-sm font-medium tracking-wide uppercase">Type</span>
-                    <span className="text-white text-sm">{selectedProduction.type}</span>
-                  </div>
+
                 </div>
+            ) : (
+              <div style={{
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                minHeight: '400px', color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem',
+              }}>
+                Loading…
               </div>
-
-              {/* Video Section */}
-              <div className="lg:col-span-3 bg-[#0D0C0B] flex items-center justify-center p-8">
-                <div className="w-full max-w-2xl aspect-video">
-                  <iframe
-                    className="w-full h-full rounded-lg shadow-2xl"
-                    src={selectedProduction.videoUrl}
-                    title={`${selectedProduction.title} - YouTube video player`}
-                    frameBorder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
-                  ></iframe>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="flex items-center justify-center min-h-[400px] text-white">
-              <p>Loading...</p>
-            </div>
           )}
         </div>
       </div>
