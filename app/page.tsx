@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function Home() {
   type Production = {
@@ -55,6 +55,97 @@ export default function Home() {
       videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
     }
   ];
+
+  // About us
+
+  const THEATRES = [
+    {
+      name: "The Old Globe",
+      location: "Balboa Park, San Diego",
+      role: "Primary Videographer",
+      productions: [
+        { title: "The Outsiders", year: "2024", note: "Broadway Transfer" },
+        { title: "The Lorax", year: "2018", note: "Archival" },
+        { title: "Sense & Sensibility", year: "2019", note: "World Premiere" },
+        { title: "Into the Woods", year: "2022", note: "Promotional" },
+        { title: "The Merry Wives of Windsor", year: "2023", note: "Documentation" },
+      ],
+    },
+    {
+      name: "La Jolla Playhouse",
+      location: "UC San Diego Campus",
+      role: "Documentary & Promo",
+      productions: [
+        { title: "The Untitled Unauthorized Hunter S. Thompson Musical", year: "2023", note: "World Premiere" },
+        { title: "Swept Away", year: "2023", note: "Broadway Transfer" },
+        { title: "Bhangin' It", year: "2019", note: "World Premiere" },
+        { title: "Once On This Island", year: "2020", note: "Archival" },
+        { title: "Cambodian Rock Band", year: "2021", note: "Documentary" },
+      ],
+    },
+    {
+      name: "Cygnet Theatre",
+      location: "Old Town, San Diego",
+      role: "Archival & Interviews",
+      productions: [
+        { title: "Always Something There", year: "2024", note: "Archival" },
+        { title: "Spring Awakening", year: "2022", note: "Documentation" },
+        { title: "Passing Strange", year: "2021", note: "Promotional" },
+        { title: "Cabaret", year: "2019", note: "Archival" },
+        { title: "Fun Home", year: "2023", note: "Documentation" },
+      ],
+    },
+  ];
+
+  const CAPABILITIES = [
+    { label: "4K Cinema RAW", icon: "◈" },
+    { label: "Multi-Camera", icon: "◈" },
+    { label: "B-Roll Coverage", icon: "◈" },
+    { label: "Promotional Edits", icon: "◈" },
+    { label: "Cast Interviews", icon: "◈" },
+    { label: "Archival Documentation", icon: "◈" },
+    { label: "Colour Grading", icon: "◈" },
+    { label: "Testimonial Reels", icon: "◈" },
+  ];
+
+  const TICKER_ITEMS = [
+    "The Outsiders · Broadway Transfer",
+    "La Jolla Playhouse · 2023",
+    "The Old Globe · 15 Years",
+    "Hunter S. Thompson Musical · World Premiere",
+    "4K Cinema RAW · Multi-Camera",
+    "Cygnet Theatre · Old Town",
+    "Archival · Documentary · Promotional",
+    "Swept Away · Broadway Transfer",
+    "San Diego's Premier Theatre Videographer",
+  ];
+
+  const [activeTheatre, setActiveTheatre] = useState(0);
+  const [visible, setVisible] = useState(false);
+  const sectionRef = useRef(null);
+
+  useEffect(() => {
+    const obs = new IntersectionObserver(
+      ([e]) => { if (e.isIntersecting) setVisible(true); },
+      { threshold: 0.1 }
+    );
+    if (sectionRef.current) obs.observe(sectionRef.current);
+    return () => obs.disconnect();
+  }, []);
+
+    // prevent scroll when modal open
+  useEffect(() => {
+    if (isVideoModalOpen || isModalOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+
+    // Cleanup in case component unmounts while modal is open
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [isVideoModalOpen, isModalOpen]);
 
   useEffect(() => {
     // Cursor tracking
@@ -229,10 +320,227 @@ export default function Home() {
         }
       });
     }
+
   });
 
   return (
     <>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=Jost:wght@300;400;500&display=swap');
+
+        :root {
+          --black: #080808;
+          --off-white: #F5F0E8;
+          --gold: #C8A96E;
+          --gold-light: #dfc08a;
+          --muted: #8a8279;
+        }
+
+        #about-section {
+          background: var(--black);
+          font-family: 'Jost', sans-serif;
+          color: var(--off-white);
+          position: relative;
+          overflow: hidden;
+        }
+
+        /* ── Ticker ── */
+        .ticker-wrap {
+          border-bottom: 1px solid rgba(200,169,110,0.1);
+          background: rgba(200,169,110,0.025);
+          overflow: hidden;
+          padding: 14px 0;
+        }
+        .ticker-track {
+          display: flex;
+          gap: 0;
+          width: max-content;
+          animation: ticker 28s linear infinite;
+        }
+        .ticker-item {
+          display: inline-flex;
+          align-items: center;
+          gap: 22px;
+          padding-right: 22px;
+          font-size: 10px;
+          letter-spacing: 0.28em;
+          text-transform: uppercase;
+          color: var(--muted);
+          white-space: nowrap;
+        }
+        .ticker-dot {
+          width: 3px; height: 3px;
+          border-radius: 50%;
+          background: rgba(200,169,110,0.4);
+          flex-shrink: 0;
+        }
+
+        /* ── Portrait ── */
+        .portrait-ring {
+          width: 148px; height: 148px;
+          border-radius: 50%;
+          padding: 3px;
+          background: conic-gradient(
+            rgba(200,169,110,0.7) 0deg,
+            rgba(200,169,110,0.1) 180deg,
+            rgba(200,169,110,0.7) 360deg
+          );
+          position: relative;
+        }
+        .portrait-inner {
+          width: 100%; height: 100%;
+          border-radius: 50%;
+          overflow: hidden;
+          background: #111;
+          position: relative;
+        }
+        .portrait-inner img {
+          width: 100%; height: 100%;
+          object-fit: cover;
+          filter: grayscale(20%) contrast(1.06) sepia(6%);
+          display: block;
+        }
+        .portrait-inner::after {
+          content: '';
+          position: absolute; inset: 0;
+          border-radius: 50%;
+          background: radial-gradient(circle at 30% 30%, rgba(200,169,110,0.1), transparent 60%);
+        }
+
+        /* ── Theatre tabs ── */
+        .theatre-tab {
+          flex: 1;
+          padding: 22px 28px;
+          background: none;
+          border: none;
+          border-bottom: 2px solid transparent;
+          cursor: pointer;
+          text-align: left;
+          transition: all 0.3s;
+          position: relative;
+        }
+        .theatre-tab.active {
+          border-bottom-color: var(--gold);
+          background: rgba(200,169,110,0.04);
+        }
+        .theatre-tab:hover:not(.active) {
+          background: rgba(255,255,255,0.02);
+        }
+        .tab-name {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 20px;
+          font-weight: 400;
+          color: var(--off-white);
+          display: block;
+          margin-bottom: 4px;
+          transition: color 0.3s;
+        }
+        .theatre-tab.active .tab-name { color: var(--gold-light); }
+        .tab-location {
+          font-size: 10px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--muted);
+          display: block;
+        }
+
+        /* ── Production list ── */
+        .prod-row {
+          display: flex;
+          align-items: baseline;
+          justify-content: space-between;
+          padding: 13px 0;
+          border-bottom: 1px solid rgba(255,255,255,0.05);
+          gap: 16px;
+          opacity: 0;
+          transform: translateY(8px);
+          animation: fadeSlide 0.35s forwards;
+        }
+        .prod-title {
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 19px;
+          font-weight: 300;
+          color: var(--off-white);
+          flex: 1;
+          min-width: 0;
+        }
+        .prod-year {
+          font-size: 11px;
+          color: var(--muted);
+          letter-spacing: 0.12em;
+          flex-shrink: 0;
+        }
+        .prod-note {
+          font-size: 9px;
+          letter-spacing: 0.22em;
+          text-transform: uppercase;
+          color: var(--gold);
+          border: 1px solid rgba(200,169,110,0.22);
+          padding: 3px 10px;
+          flex-shrink: 0;
+          white-space: nowrap;
+        }
+        .prod-more {
+          font-size: 11px;
+          letter-spacing: 0.18em;
+          text-transform: uppercase;
+          color: rgba(200,169,110,0.45);
+          padding: 16px 0 0;
+          display: flex;
+          align-items: center;
+          gap: 10px;
+        }
+        .prod-more::before {
+          content: '';
+          display: inline-block;
+          width: 20px; height: 1px;
+          background: rgba(200,169,110,0.3);
+        }
+
+        /* ── Capability pills ── */
+        .cap-pill {
+          display: inline-flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          letter-spacing: 0.2em;
+          text-transform: uppercase;
+          color: var(--off-white);
+          border: 1px solid rgba(200,169,110,0.14);
+          padding: 8px 16px;
+          transition: all 0.3s;
+          cursor: default;
+        }
+        .cap-pill:hover {
+          color: var(--gold-light);
+          border-color: rgba(200,169,110,0.4);
+          background: rgba(200,169,110,0.05);
+        }
+        .cap-pill-icon {
+          color: var(--gold);
+          font-size: 8px;
+        }
+
+        /* ── Reveal animation ── */
+        .reveal-about {
+          opacity: 0;
+          transform: translateY(20px);
+          transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .reveal-about.in {
+          opacity: 1;
+          transform: none;
+        }
+
+        @keyframes ticker {
+          0%   { transform: translateX(0); }
+          100% { transform: translateX(-50%); }
+        }
+        @keyframes fadeSlide {
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
+
       {/* Custom cursor */}
       <div className="cursor" id="cursor"></div>
       <div className="cursor-ring" id="cursorRing"></div>
@@ -440,6 +748,257 @@ export default function Home() {
         <a href="#" className="btn-dark reveal reveal-delay-2">Start a Conversation</a>
       </section>
 
+
+
+
+      {/* ══════════ ABOUT ══════════ */}
+      <section id="about-section" ref={sectionRef}>
+
+        {/* ── Main content ── */}
+        <div style={{ padding: "100px 52px 80px" }}>
+
+          {/* ── Portrait + identity block ── */}
+          <div
+            className={`reveal ${visible ? "in" : ""}`}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              marginBottom: 40,
+              gap: 24,
+              transitionDelay: "0.1s",
+            }}
+          >
+            <div className="portrait-ring">
+              <div className="portrait-inner">
+                <img
+                  src="https://i.vimeocdn.com/portrait/59559255_288x288"
+                  alt="Mark Holmes"
+                />
+              </div>
+            </div>
+
+            <div>
+              <div style={{
+                fontFamily: "'Bebas Neue', sans-serif",
+                fontSize: 13,
+                letterSpacing: "0.4em",
+                color: "var(--gold)",
+                marginBottom: 10,
+                textTransform: "uppercase",
+              }}>
+                San Diego's Theatre Videographer
+              </div>
+
+              <h2 style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(40px, 5vw, 68px)",
+                fontWeight: 300,
+                lineHeight: 1,
+                color: "var(--off-white)",
+                margin: "0 0 8px",
+                letterSpacing: "0.02em",
+              }}>
+                Mark Holmes
+              </h2>
+
+              <p style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(16px, 1.4vw, 20px)",
+                fontStyle: "italic",
+                fontWeight: 300,
+                color: "var(--muted)",
+                margin: 0,
+                letterSpacing: "0.03em",
+                maxWidth: 800,
+                marginTop: 20,
+              }}>
+
+                Beyond the stage, Mark is the co-founder of{" "}
+                <span style={{ color: "var(--off-white)" }}>Daisy 3 Pictures</span> alongside
+                director James Vásquez and actress Carrie Preston — a production company behind
+                three nationally distributed feature films. That experience in narrative filmmaking
+                deepens every live theatre project: the instinct for story, the eye for a moment,
+                the craft behind the camera.
+              </p>
+            </div>
+
+            {/* Stat row */}
+
+          </div>
+
+
+          <div
+            className={`${visible ? "in" : ""}`}
+            style={{
+              transitionDelay: "0.28s",
+            }}
+          >
+
+            <div style={{ width: "100%", display: "flex", justifyContent: "center", alignSelf: "center", marginBottom: 60 }} className="reveal">
+              <a href="#contact" style={{
+                fontFamily: "'Jost', sans-serif",
+                fontSize: 12,
+                letterSpacing: "0.22em",
+                textTransform: "uppercase",
+                color: "var(--black)",
+                background: "var(--gold)",
+                padding: "16px 42px",
+                textDecoration: "none",
+                display: "inline-block",
+                fontWeight: 400,
+              }} className="hover:scale-105 transition-transform">
+                Work With Mark
+              </a>
+            </div>
+
+
+            {/* ── Capabilities ── */}
+            <div
+              className={`reveal ${visible ? "in" : ""}`}
+              style={{ transitionDelay: "0.35s", marginTop: 50, marginBottom: 70 }}
+            >
+              <div style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 24,
+                marginBottom: 40,
+              }}>
+                <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
+                <span style={{
+                  fontSize: 10,
+                  letterSpacing: "0.38em",
+                  textTransform: "uppercase",
+                  color: "var(--gold)",
+                }}>Videography & Editing</span>
+                <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
+              </div>
+
+              <div style={{ display: "flex", flexWrap: "wrap", gap: 20,
+                justifyContent: "center",}}>
+                {CAPABILITIES.map((c, i) => (
+                  <div className="cap-pill" key={i}>
+                    <span className="cap-pill-icon">{c.icon}</span>
+                    {c.label}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+
+            <style>{`
+              .theatre-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding: 8px 0;
+              }
+              .theatre-card {
+                flex: 1 1 200px;
+                padding: 28px 32px;
+                border: 1px solid rgba(200,169,110,0.1);
+                position: relative;
+                overflow: hidden;
+                cursor: default;
+                transition: border-color 0.4s, transform 0.35s cubic-bezier(.16,1,.3,1);
+                justify-content: center;
+                align-items: flex-start;
+                display: flex;
+                flex-direction: column;
+                text-align: left;
+              }
+              .theatre-card::before {
+                content: '';
+                position: absolute; inset: 0;
+                background: linear-gradient(135deg, rgba(200,169,110,0.09) 0%, rgba(200,169,110,0.03) 100%);
+                opacity: 0;
+                transition: opacity 0.4s;
+              }
+              .theatre-card:hover { border-color: rgba(200,169,110,0.45); transform: translateY(-2px); }
+              .theatre-card:hover::before { opacity: 1; }
+
+              .theatre-card-name {
+                font-family: 'Cormorant Garamond', serif;
+                font-size: clamp(18px, 2vw, 26px);
+                font-weight: 300;
+                color: var(--off-white);
+                line-height: 1.15;
+                margin-bottom: 8px;
+                position: relative; z-index: 1;
+                transition: color 0.35s;
+              }
+              .theatre-card:hover .theatre-card-name { color: var(--gold-light); }
+
+              .theatre-card-location {
+                font-size: 9px;
+                letter-spacing: 0.28em;
+                text-transform: uppercase;
+                color: var(--muted);
+                position: relative; z-index: 1;
+                transition: color 0.35s;
+              }
+              .theatre-card:hover .theatre-card-location { color: rgba(200,169,110,0.6); }
+
+              .theatre-card-dot {
+                position: absolute;
+                top: 16px; right: 16px;
+                width: 5px; height: 5px;
+                border-radius: 50%;
+                background: rgba(200,169,110,0.2);
+                transition: background 0.35s, box-shadow 0.35s;
+                z-index: 1;
+                display: none;
+              }
+              .theatre-card:hover .theatre-card-dot {
+                background: var(--gold);
+                box-shadow: 0 0 8px rgba(200,169,110,0.5);
+              }
+            `}</style>
+
+
+            <div style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 24,
+              marginBottom: 40,
+            }} className="reveal">
+              <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
+              <span style={{
+                fontSize: 10,
+                letterSpacing: "0.38em",
+                textTransform: "uppercase",
+                color: "var(--gold)",
+              }}>Theatres We Work With</span>
+              <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
+            </div>
+
+            <div className="theatre-grid reveal">
+              {[
+                { name: "The Old Globe",             location: "Balboa Park · San Diego"    },
+                { name: "La Jolla Playhouse",        location: "UC San Diego Campus"         },
+                { name: "Cygnet Theatre",            location: "Old Town · San Diego"        },
+                { name: "San Diego Musical Theatre", location: "Mission Valley · San Diego"  },
+              ].map((t, i) => (
+                <div className="theatre-card" key={i}>
+                  <div className="theatre-card-dot" />
+                  <div className="theatre-card-name">{t.name}</div>
+                  <div className="theatre-card-location">{t.location}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+
+        </div>
+
+      </section>
+
+
+
+
+
+
       {/* ══════════ FOOTER ══════════ */}
       <footer>
 
@@ -621,7 +1180,7 @@ export default function Home() {
 
       {/* Video Modal */}
       <div className={`fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isVideoModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsVideoModalOpen(false)}>
-        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-[90vh] overflow-hidden relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
           <button className="absolute top-4 right-4 text-white hover:text-[#f2be60] text-2xl z-50 w-8 h-8 flex items-center justify-center transition-colors" onClick={() => setIsVideoModalOpen(false)}>&times;</button>
 
             {selectedProduction ? (
