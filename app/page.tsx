@@ -110,7 +110,7 @@ export default function Home() {
 
   const TICKER_ITEMS = [
     "The Outsiders · Broadway Transfer",
-    "La Jolla Playhouse · 2023",
+    "La Jolla Playhouse · 2026",
     "The Old Globe · 15 Years",
     "Hunter S. Thompson Musical · World Premiere",
     "4K Cinema RAW · Multi-Camera",
@@ -119,6 +119,57 @@ export default function Home() {
     "Swept Away · Broadway Transfer",
     "San Diego's Premier Theatre Videographer",
   ];
+
+  // Ticker state machine
+  const trackRef = useRef<HTMLDivElement>(null);
+  const stepRef = useRef(0);
+  const SLIDE_MS = 1400;
+
+  const highlightActive = (items: HTMLElement[], step: number) => {
+    items.forEach((el, i) => el.classList.remove('ticker-item--active'));
+    items[step % (items.length / 2)]?.classList.add('ticker-item--active');
+    // also highlight the duplicate
+    items[step % (items.length / 2) + items.length / 2]?.classList.add('ticker-item--active');
+  };
+
+  useEffect(() => {
+    const track = trackRef.current;
+    if (!track) return;
+
+    track.style.transition = `transform ${SLIDE_MS}ms ease`;
+
+    const interval = setInterval(() => {
+      const items = Array.from(track.children) as HTMLElement[];
+      const n = items.length / 2;
+
+      stepRef.current += 1;
+
+      let offset = 0;
+      for (let i = 0; i < stepRef.current; i++) {
+        offset += items[i].offsetWidth;
+      }
+      track.style.transform = `translateX(-${offset}px)`;
+      highlightActive(items, stepRef.current);  // ← highlight after each step
+
+      if (stepRef.current >= n) {
+        setTimeout(() => {
+          track.style.transition = 'none';
+          track.style.transform = 'translateX(0)';
+          stepRef.current = 0;
+          highlightActive(items, 0);  // ← reset highlight on snap back
+          requestAnimationFrame(() =>
+            requestAnimationFrame(() => {
+              track.style.transition = `transform ${SLIDE_MS}ms ease`;
+            })
+          );
+        }, SLIDE_MS);
+      }
+    }, SLIDE_MS + 1000);// slide duration + hold delay
+
+    return () => clearInterval(interval);
+  }, []);
+
+  // Intersection observer for about section reveal
 
   const [activeTheatre, setActiveTheatre] = useState(0);
   const [visible, setVisible] = useState(false);
@@ -334,42 +385,145 @@ export default function Home() {
           --gold: #C8A96E;
           --gold-light: #dfc08a;
           --muted: #8a8279;
+          --light-gray: #BDB9B3;
         }
 
         #about-section {
-          background: var(--black);
+          background: var(--deep);
           font-family: 'Jost', sans-serif;
           color: var(--off-white);
           position: relative;
           overflow: hidden;
         }
 
+        #about-section:before {
+            content: "SAN DIEGO";
+            color: #c8a96e1a;
+            letter-spacing: .08em;
+            pointer-events: none;
+            white-space: nowrap;
+            font-family: Bebas Neue, sans-serif;
+            font-size: clamp(80px, 14vw, 200px);
+            position: absolute;
+            top: clamp(60px, 20vw, 80px);
+            right: -20px;
+        }
+
+        .about-section-inner {
+          padding: 80px 60px 40px;
+        }
+
+        #about-section .bio-wrapper {
+          display: flex;
+          column-gap: 40px;
+        }
+
+        #about-section .bio {
+          justify-content: flex-start;
+          text-align: left;
+          width: 100%;
+          margin-bottom: 40px;
+          flex-wrap: wrap;
+        }
+
+        #about-section .bio p {
+          font-size: clamp(14px, 5vw, 16px);
+          font-weight: 300;
+          color: var(--light-gray);
+          margin: 0;
+          letter-spacing: 0.03em;
+          max-width: 800px;
+          margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+          #about-section:before {
+            left: 50%;
+            transform: translateX(-50%);
+            top:clamp(450px, 5vw, 600px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+          }
+
+          .about-section-inner {
+            padding: 40px 24px 40px;
+          }
+
+          #about-section .bio-wrapper {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 40px;
+            justify-content: center;
+          }
+
+          #about-section .bio {
+            font-size: clamp(60px, 14vw, 160px);
+            top: clamp(40px, 20vw, 60px);
+            align-items: center;
+            text-align: center;
+            margin-bottom: 0 !important;
+            flex-wrap: wrap;
+          }
+        }
+
         /* ── Ticker ── */
         .ticker-wrap {
-          border-bottom: 1px solid rgba(200,169,110,0.1);
-          background: rgba(200,169,110,0.025);
           overflow: hidden;
-          padding: 14px 0;
+          position: relative;
+          padding: 24px 0;
+          border-top: 1px solid var(--gold-dim);
+          border-bottom: 1px solid var(--gold-dim);
         }
-        .ticker-track {
-          display: flex;
-          gap: 0;
-          width: max-content;
-          animation: ticker 28s linear infinite;
+
+        .ticker-item {
+          display: inline-block;
+          white-space: nowrap;
         }
+
+        /* Slide in from right */
+        .ticker-item--enter {
+          animation: slideIn 0.4s ease forwards;
+        }
+
+        /* Hold in place — no animation needed, just sits there */
+        .ticker-item--hold {
+          transform: translateX(0);
+        }
+
+        /* Slide out to left */
+        .ticker-item--exit {
+          animation: slideOut 0.1s ease forwards;
+        }
+
+
+          .ticker-track {
+            display: flex;
+            gap: 0;
+            width: max-content;
+            margin-left: 60px;
+          }
+
         .ticker-item {
           display: inline-flex;
           align-items: center;
-          gap: 22px;
-          padding-right: 22px;
-          font-size: 10px;
-          letter-spacing: 0.28em;
+          gap: 30px;
+          padding-right: 30px;
+          font-size: 11px;
+          letter-spacing: 0.18em;
           text-transform: uppercase;
-          color: var(--muted);
+          color: var(--gold-light);
           white-space: nowrap;
+          font-weight: 100;
         }
+
+        .ticker-item--active {
+          color: var(--light-gray);
+          font-weight: 500;
+        }
+
         .ticker-dot {
-          width: 3px; height: 3px;
+          width: 5px; height: 5px;
           border-radius: 50%;
           background: rgba(200,169,110,0.4);
           flex-shrink: 0;
@@ -502,7 +656,7 @@ export default function Home() {
           display: inline-flex;
           align-items: center;
           gap: 8px;
-          font-size: 12px;
+          font-size: clamp(10px, 1.8vw, 12px);
           letter-spacing: 0.2em;
           text-transform: uppercase;
           color: var(--off-white);
@@ -739,93 +893,120 @@ export default function Home() {
         </div>
       </section>
 
-      {/* ══════════ CTA STRIP ══════════ */}
-      <section id="cta">
-        <div className="cta-text reveal">
-          <h3>Your next production<br />deserves to be remembered.</h3>
-          <p>Based in San Diego · Available for Broadway & national touring engagements</p>
-        </div>
-        <a href="#" className="btn-dark reveal reveal-delay-2">Start a Conversation</a>
-      </section>
-
-
-
 
       {/* ══════════ ABOUT ══════════ */}
       <section id="about-section" ref={sectionRef}>
-
+        <div className="ticker-wrap">
+          <div className="ticker-track" ref={trackRef}>
+            {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
+              <span
+                className={`ticker-item${i === 0 || i === TICKER_ITEMS.length ? ' ticker-item--active' : ''}`}
+                key={i}
+              >
+                {item}<span className="ticker-dot" />
+              </span>
+            ))}
+          </div>
+        </div>
         {/* ── Main content ── */}
-        <div style={{ padding: "100px 52px 80px" }}>
+        <div className="about-section-inner">
 
           {/* ── Portrait + identity block ── */}
-          <div
-            className={`reveal ${visible ? "in" : ""}`}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              marginBottom: 40,
-              gap: 24,
-              transitionDelay: "0.1s",
-            }}
-          >
-            <div className="portrait-ring">
-              <div className="portrait-inner">
-                <img
-                  src="https://i.vimeocdn.com/portrait/59559255_288x288"
-                  alt="Mark Holmes"
-                />
+          <div className="bio-wrapper">
+            <div
+              className={`reveal bio`}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 24,
+                transitionDelay: "0.1s",
+                flexWrap: "wrap",
+              }}
+            >
+              <div className="portrait-ring">
+                <div className="portrait-inner">
+                  <img
+                    src="https://i.vimeocdn.com/portrait/59559255_288x288"
+                    alt="Mark Holmes"
+                  />
+                </div>
               </div>
+
+              <div>
+                <div style={{
+                  fontFamily: "'Bebas Neue', sans-serif",
+                  fontSize: 13,
+                  letterSpacing: "0.4em",
+                  color: "var(--gold)",
+                  marginBottom: 10,
+                  textTransform: "uppercase",
+                }}>
+                  San Diego's Theatre Videographer
+                </div>
+
+                <h2 style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(40px, 5vw, 68px)",
+                  fontWeight: 300,
+                  lineHeight: 1,
+                  color: "var(--off-white)",
+                  margin: "0 0 8px",
+                  letterSpacing: "0.02em",
+                }}>
+                  Mark Holmes
+                </h2>
+
+                <p style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "clamp(16px, 5.4vw, 20px)",
+                  fontStyle: 'italic',
+                  fontWeight: 600,
+                  color: "var(--light-gray)",
+                  marginTop: '0px',
+                }}>
+
+                  For over 15 years, we've captured the heart of live performance in 4K.
+                </p>
+
+                <p className="!pt-4">
+                  Based in San Diego, our collaborations include the Old Globe, La Jolla
+                  Playhouse, North Coast Rep, and more, bringing the magic of the stage
+                  to screens worldwide. Together, we can immortalize your next production in
+                  cinema-quality format.
+                </p>
+                <p>
+                  Beyond the camera, Mark is the co-founder of{" "}
+                  <span style={{ color: "var(--off-white)" }}>Daisy 3 Pictures</span>{" "}
+                  alongside director James Vásquez and actress Carrie Preston, the
+                  production company behind{" "}
+                  <em>29th and Gay</em>, <em>Ready? OK!</em>, and{" "}
+                  <em>That's What She Said</em>.
+                </p>
+              </div>
+
+              {/* Stat row */}
+
             </div>
 
-            <div>
-              <div style={{
-                fontFamily: "'Bebas Neue', sans-serif",
-                fontSize: 13,
-                letterSpacing: "0.4em",
-                color: "var(--gold)",
-                marginBottom: 10,
+            <div
+            style={{ display: "flex", alignSelf: "center"}}
+            className="reveal reveal-delay-2 justify-center md:justify-end text-nowrap margin-bottom-0">
+              <a href="#contact" style={{
+                fontFamily: "'Jost', sans-serif",
+                fontSize: 12,
+                letterSpacing: "0.22em",
                 textTransform: "uppercase",
-              }}>
-                San Diego's Theatre Videographer
-              </div>
-
-              <h2 style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(40px, 5vw, 68px)",
-                fontWeight: 300,
-                lineHeight: 1,
-                color: "var(--off-white)",
-                margin: "0 0 8px",
-                letterSpacing: "0.02em",
-              }}>
-                Mark Holmes
-              </h2>
-
-              <p style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "clamp(16px, 1.4vw, 20px)",
-                fontStyle: "italic",
-                fontWeight: 300,
-                color: "var(--muted)",
-                margin: 0,
-                letterSpacing: "0.03em",
-                maxWidth: 800,
-                marginTop: 20,
-              }}>
-
-                Beyond the stage, Mark is the co-founder of{" "}
-                <span style={{ color: "var(--off-white)" }}>Daisy 3 Pictures</span> alongside
-                director James Vásquez and actress Carrie Preston — a production company behind
-                three nationally distributed feature films. That experience in narrative filmmaking
-                deepens every live theatre project: the instinct for story, the eye for a moment,
-                the craft behind the camera.
-              </p>
+                color: "var(--black)",
+                background: "var(--gold)",
+                padding: "14px 42px",
+                textDecoration: "none",
+                display: "inline-block",
+                fontWeight: 400,
+              }} className="hover:scale-105 transition-transform"
+              onClick={() => setIsModalOpen(true)}>
+                Work With Mark
+              </a>
             </div>
-
-            {/* Stat row */}
-
           </div>
 
 
@@ -835,23 +1016,6 @@ export default function Home() {
               transitionDelay: "0.28s",
             }}
           >
-
-            <div style={{ width: "100%", display: "flex", justifyContent: "center", alignSelf: "center", marginBottom: 60 }} className="reveal">
-              <a href="#contact" style={{
-                fontFamily: "'Jost', sans-serif",
-                fontSize: 12,
-                letterSpacing: "0.22em",
-                textTransform: "uppercase",
-                color: "var(--black)",
-                background: "var(--gold)",
-                padding: "16px 42px",
-                textDecoration: "none",
-                display: "inline-block",
-                fontWeight: 400,
-              }} className="hover:scale-105 transition-transform">
-                Work With Mark
-              </a>
-            </div>
 
 
             {/* ── Capabilities ── */}
@@ -875,7 +1039,7 @@ export default function Home() {
                 <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
               </div>
 
-              <div style={{ display: "flex", flexWrap: "wrap", rowGap: 30, columnGap: 20,
+              <div style={{ display: "flex", flexWrap: "wrap", rowGap: "clamp(10px, 5vw, 20px)", columnGap: "clamp(2px, 15vw, 20px)",
                 justifyContent: "center", margin: "0 auto", maxWidth: 900, }}>
                 {CAPABILITIES.map((c, i) => (
                   <div className="cap-pill" key={i}>
@@ -893,20 +1057,22 @@ export default function Home() {
                 flex-wrap: wrap;
                 gap: 12px;
                 padding: 8px 0;
+                max-width: 1000px;
+                margin: 0 auto;
               }
               .theatre-card {
                 flex: 1 1 200px;
                 padding: 28px 32px;
-                border: 1px solid rgba(200,169,110,0.1);
+                border: 1px solid rgba(200,169,110,0.0);
                 position: relative;
                 overflow: hidden;
                 cursor: default;
                 transition: border-color 0.4s, transform 0.35s cubic-bezier(.16,1,.3,1);
-                justify-content: center;
-                align-items: flex-start;
+                justify-content: flex-start;
+                align-items: center;
                 display: flex;
                 flex-direction: column;
-                text-align: left;
+                text-align: center;
               }
               .theatre-card::before {
                 content: '';
@@ -919,14 +1085,15 @@ export default function Home() {
               .theatre-card:hover::before { opacity: 1; }
 
               .theatre-card-name {
-                font-family: 'Cormorant Garamond', serif;
-                font-size: clamp(18px, 2vw, 26px);
-                font-weight: 300;
-                color: var(--off-white);
+                font-size: clamp(9px, 2vw, 10px);
+                font-weight: 500;
+                color: var(--muted);
                 line-height: 1.15;
-                margin-bottom: 8px;
+                margin-bottom: 5px;
                 position: relative; z-index: 1;
                 transition: color 0.35s;
+                letter-spacing: 0.2em;
+                text-transform: uppercase;
               }
               .theatre-card:hover .theatre-card-name { color: var(--gold-light); }
 
@@ -975,12 +1142,48 @@ export default function Home() {
 
             <div className="theatre-grid reveal">
               {[
-                { name: "The Old Globe",             location: "Balboa Park · San Diego"    },
-                { name: "La Jolla Playhouse",        location: "UC San Diego Campus"         },
-                { name: "Cygnet Theatre",            location: "Old Town · San Diego"        },
-                { name: "San Diego Musical Theatre", location: "Mission Valley · San Diego"  },
+                {
+                  name: "The Old Globe",
+                  location: "Balboa Park · San Diego",
+                  logo: "https://www.theoldglobe.org/globalassets/old_globe_logo_white.svg",
+                },
+                {
+                  name: "La Jolla Playhouse",
+                  location: "UC San Diego Campus",
+                  logo: "https://lajollaplayhouse.org/wp-content/themes/lajollaplayhouse2/media/svg/logo.svg",
+                },
+                {
+                  name: "Cygnet Theatre",
+                  location: "Old Town · San Diego",
+                  logo: "https://cygnettheatre.org/wp-content/themes/cygnet_theatre/assets/img/logo.svg",
+                },
+                {
+                  name: "San Diego Musical Theatre",
+                  location: "Mission Valley · San Diego",
+                  logo: "https://www.sdmt.org/wp-content/uploads/2016/08/sdmt-logo.png",
+                },
               ].map((t, i) => (
                 <div className="theatre-card" key={i}>
+                  <div style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: 64,
+                    marginBottom: 16,
+                  }}>
+                    <img
+                      src={t.logo}
+                      alt={`${t.name} logo`}
+                      style={{
+                        maxHeight: 56,
+                        maxWidth: "100%",
+                        width: "100%",
+                        objectFit: "contain",
+                        filter: "brightness(0) invert(1)",
+                        opacity: 0.85,
+                      }}
+                    />
+                  </div>
                   <div className="theatre-card-dot" />
                   <div className="theatre-card-name">{t.name}</div>
                   <div className="theatre-card-location">{t.location}</div>
@@ -995,6 +1198,17 @@ export default function Home() {
       </section>
 
 
+
+      {/* ══════════ CTA STRIP ══════════ */}
+      <section id="cta">
+        <div className="cta-text reveal">
+          <h3>Your next production<br />deserves to be remembered.</h3>
+          <p>Based in San Diego · Available for Broadway & national touring engagements</p>
+        </div>
+        <button className="btn-dark reveal reveal-delay-2"
+        onClick={() => setIsModalOpen(true)}
+        >Start a Conversation</button>
+      </section>
 
 
 
