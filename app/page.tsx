@@ -875,8 +875,8 @@ export default function Home() {
                 <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
               </div>
 
-              <div style={{ display: "flex", flexWrap: "wrap", gap: 20,
-                justifyContent: "center",}}>
+              <div style={{ display: "flex", flexWrap: "wrap", rowGap: 30, columnGap: 20,
+                justifyContent: "center", margin: "0 auto", maxWidth: 900, }}>
                 {CAPABILITIES.map((c, i) => (
                   <div className="cap-pill" key={i}>
                     <span className="cap-pill-icon">{c.icon}</span>
