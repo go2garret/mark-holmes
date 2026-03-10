@@ -484,7 +484,6 @@ h2 strong {
   background: var(--black);
   padding: 80px 52px;
   position: relative;
-  overflow: hidden;
 }
 #capabilities::after {
   content: '';
@@ -493,29 +492,44 @@ h2 strong {
   pointer-events: none;
 }
 
+.cap-sticky {
+    position: sticky;
+    top: 120px;
+    height: calc(100dvh - 200px);
+    overflow: hidden;
+}
+
 .capabilities-grid {
-  display: flex;
+  height: 800px;
   flex-wrap: wrap;
   gap: 0;
-  margin-top: 80px;
+  margin-top: 50px;
+  display: flex;
+  overflow: hidden;
 }
+
+.capabilities-grid-wrapper {
+  height: 100vh;
+  overflow: hidden;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  overflow: hidden;
+}
+
 .cap-visual {
   position: relative;
   height: 580px;
   overflow: hidden;
   width: 50%;
+  z-index: 100;
+  background: var(--black);
 }
 .cap-visual img {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  filter: saturate(0.6) brightness(0.7);
-  transform: scale(1.04);
-  transition: transform 1.2s cubic-bezier(.16,1,.3,1), filter 1.2s;
-}
-.cap-visual:hover img {
-  transform: scale(1.0);
-  filter: saturate(0.9) brightness(0.85);
+  filter: unset;
 }
 .cap-visual-badge {
   position: absolute; bottom: 32px; left: 32px;
@@ -543,24 +557,37 @@ h2 strong {
 }
 .cap-list {
   margin-top: 40px;
-  display: flex; flex-direction: column; gap: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  will-change: transform;
+  z-index: 1;
+  row-gap: 10rem;
+  justify-content: center;
+  align-items: center;
 }
 .cap-item {
   padding: 24px 0;
-  border-bottom: 1px solid rgba(200, 169, 110, 0.1);
   display: flex; align-items: flex-start; gap: 24px;
   cursor: none;
   transition: background .3s;
   position: relative;
   overflow: hidden;
+  text-align: center;
 }
-.cap-item::before {
+.cap-item.active {
+  color: var(--gold-light);
+}
+.cap-item &:last-child {
+  margin-bottom: 0 !important;
+}
+/* .cap-item::before {
   content: '';
   position: absolute; left: -100%; top: 0; bottom: 0;
   width: 100%;
   background: linear-gradient(to right, transparent, rgba(200,169,110,0.04), transparent);
   transition: left .6s cubic-bezier(.16,1,.3,1);
-}
+} */
 .cap-item:hover::before { left: 100%; }
 
 .cap-num {
@@ -568,18 +595,27 @@ h2 strong {
   font-size: 13px; color: var(--gold);
   opacity: 0.7; letter-spacing: 0.1em;
   min-width: 28px; margin-top: 2px;
+  display: none;
 }
 .cap-item-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 24px; font-weight: 400;
+  font-size: 44px;
+  line-height: 1em;
+  font-weight: 400;
   color: var(--off-white);
-  margin-bottom: 6px;
+  margin-bottom: 14px;
   transition: color .3s;
+  text-align: center;
+  position: relative;
+  font-style: italic;
 }
-.cap-item:hover .cap-item-title { color: var(--gold-light); }
+/* .cap-item:hover .cap-item-title { color: var(--gold-light); } */
 .cap-item-desc {
-  font-size: 13px; color: var(--muted);
-  line-height: 1.7; letter-spacing: 0.01em;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(14px, 2vw, 22px);
+  color: var(--light-gray);
+  line-height: 1.7;
+  letter-spacing: 0.01em;
 }
 
 /* ── FOOTER / CTA STRIP ── */
@@ -898,6 +934,11 @@ footer::before {
   .hero-content {
     margin-top: 60px;
   }
+
+  .cap-sticky {
+      top: 10px;
+      height: calc(100dvh - 150px);
+  }
 }
 
 @media (max-height: 800px) {
@@ -913,6 +954,10 @@ footer::before {
     position: relative;
   }
 
+  .cap-sticky {
+      height: calc(100dvh - 10px);
+      margin-bottom: -50px !important;
+  }
 }
 
 @media (max-height: 1000px) and (min-height: 800px) {
@@ -949,11 +994,23 @@ footer::before {
   }
 
   .capabilities-grid {
-    margin-top: 40px;
+    margin-top: 80px;
+  }
+
+  .cap-sticky {
+      height: calc(100dvh - 100px);
+      top: 10px;
+      position: sticky;
+      overflow: hidden;
+      margin-bottom: -250px;
   }
 
   .cap-visual, .cap-content {
     width: 100%;
+  }
+
+  .cap-visual {
+    height: clamp(150px, 0.5vh, 280px);
   }
 
   .cap-content {
@@ -1029,10 +1086,15 @@ footer::before {
   }
 
   .capabilities-grid {
-    margin-top: 40px;
+    margin-top: 100px;
+    height: 100vh;
   }
 
   .cap-visual, .cap-content { width: 100%; padding: 32px; }
+
+  .cap-visual {
+    height: 320px;
+  }
 
   .footer-upper {
     grid-template-columns: 1fr 1fr;

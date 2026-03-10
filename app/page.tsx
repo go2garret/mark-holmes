@@ -120,17 +120,159 @@ export default function Home() {
     "San Diego's Premier Theatre Videographer",
   ];
 
+  // Cap items scroll
+  const CAP_ITEMS = [
+    {
+      num: "01",
+      title: "Live Performance Videography",
+      desc: "Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.",
+      image: "audience.jpg",
+    },
+    {
+      num: "02",
+      title: "Archival & Documentation",
+      desc: "Broadcast-quality archival footage created for producers, directors, and Tony Award submission packages.",
+      image: "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?q=80&w=1071&auto=format&fit=crop",
+    },
+    {
+      num: "03",
+      title: "Production Photography",
+      desc: "Still photography for press kits, playbills, marketing campaigns, and the iconic editorial moments that define a production.",
+      image: "https://images.unsplash.com/photo-1645548979753-8fd5fd389aa2?q=80&w=1071&auto=format&fit=crop",
+    },
+    {
+      num: "04",
+      title: "Promotional Trailers",
+      desc: "Cinematic short-form trailers that capture the visceral energy of your show and drive audiences to the box office.",
+      image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=1071&auto=format&fit=crop",
+    },
+  ];
+
+  // Add this state alongside your existing ones
+  const [listTranslateY, setListTranslateY] = useState(0);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const totalTravelRef = useRef(0);
+
+  useEffect(() => {
+    const calculateTravel = () => {
+      const listEl = listRef.current;
+      if (!listEl) return;
+      const items = listEl.querySelectorAll<HTMLElement>(".cap-item");
+      if (items.length > 1) {
+        totalTravelRef.current =
+          items[items.length - 1].offsetTop - items[0].offsetTop;
+      }
+    };
+
+    calculateTravel();
+    window.addEventListener("resize", calculateTravel);
+    return () => window.removeEventListener("resize", calculateTravel);
+  }, []);
+
+  useEffect(() => {
+    let rafId: number;
+
+    const onScroll = () => {
+      // Cancel any pending frame — only process the latest scroll position
+      cancelAnimationFrame(rafId);
+
+      rafId = requestAnimationFrame(() => {
+        const el = trackRef2.current;
+        if (!el) return;
+
+        const scrolledIn = -el.getBoundingClientRect().top;
+
+        if (scrolledIn <= 0) {
+          setActiveIndex(0);
+          if (listRef.current) {
+            listRef.current.style.transform = "translateY(0px)";
+          }
+          return;
+        }
+
+        const progress = Math.min(scrolledIn / SCROLLER_HEIGHT, 1);
+
+        const newIndex = Math.min(
+          Math.floor(progress * CAP_ITEMS.length),
+          CAP_ITEMS.length - 1
+        );
+        setActiveIndex(newIndex); // still fine — cheap index comparison
+
+        // Write transform directly to DOM, zero React overhead
+        if (listRef.current) {
+          const y = -progress * totalTravelRef.current;
+          listRef.current.style.transform = `translate3d(0, ${y}px, 0)`;
+        }
+      });
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
+
+  // How many px of scroll each item stays active — tune this freely
+  const PX_PER_ITEM = 550;
+  const SCROLLER_HEIGHT = CAP_ITEMS.length * PX_PER_ITEM;
+
+  const trackRef2 = useRef<HTMLElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+  const [imgSrc, setImgSrc] = useState(CAP_ITEMS[0].image);
+  const [imgFading, setImgFading] = useState(false);
+
+  // Crossfade image when active item changes
+  // useEffect(() => {
+  //   const next = CAP_ITEMS[activeIndex].image;
+  //   if (next === imgSrc) return;
+  //   setImgFading(true);
+  //   const t = setTimeout(() => {
+  //     setImgSrc(next);
+  //     setImgFading(false);
+  //   }, 50);
+  //   return () => clearTimeout(t);
+  // }, [activeIndex]);
+
+  useEffect(() => {
+    const onScroll = () => {
+      const el = trackRef2.current;
+      if (!el) return;
+
+      // scrolledIn = how far the track's top edge has passed above the viewport top
+      // 0 = just reached top of screen, positive = scrolling through scroller budget
+      const scrolledIn = -el.getBoundingClientRect().top;
+
+      if (scrolledIn <= 0) {
+        setActiveIndex(0);
+        return;
+      }
+
+      const newIndex = Math.min(
+        Math.floor((scrolledIn / SCROLLER_HEIGHT) * CAP_ITEMS.length),
+        CAP_ITEMS.length - 1
+      );
+      setActiveIndex(newIndex);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    onScroll();
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   // Ticker state machine
   const trackRef = useRef<HTMLDivElement>(null);
   const stepRef = useRef(0);
   const SLIDE_MS = 1400;
 
-  const highlightActive = (items: HTMLElement[], step: number) => {
-    items.forEach((el, i) => el.classList.remove('ticker-item--active'));
-    items[step % (items.length / 2)]?.classList.add('ticker-item--active');
-    // also highlight the duplicate
-    items[step % (items.length / 2) + items.length / 2]?.classList.add('ticker-item--active');
-  };
+  // const highlightActive = (items: HTMLElement[], step: number) => {
+  //   items.forEach((el, i) => el.classList.remove('ticker-item--active'));
+  //   items[step % (items.length / 2)]?.classList.add('ticker-item--active');
+  //   // also highlight the duplicate
+  //   items[step % (items.length / 2) + items.length / 2]?.classList.add('ticker-item--active');
+  // };
 
   useEffect(() => {
     const track = trackRef.current;
@@ -149,17 +291,17 @@ export default function Home() {
         offset += items[i].offsetWidth;
       }
       track.style.transform = `translateX(-${offset}px)`;
-      highlightActive(items, stepRef.current);  // ← highlight after each step
+      // highlightActive(items, stepRef.current);  // highlight after each step
 
       if (stepRef.current >= n) {
         setTimeout(() => {
           track.style.transition = 'none';
           track.style.transform = 'translateX(0)';
           stepRef.current = 0;
-          highlightActive(items, 0);  // ← reset highlight on snap back
+          // highlightActive(items, 0);  // ← reset highlight on snap back
           requestAnimationFrame(() =>
             requestAnimationFrame(() => {
-              track.style.transition = `transform ${SLIDE_MS}ms ease`;
+              track.style.transition = `transform ${SLIDE_MS}ms ease-in-out`;
             })
           );
         }, SLIDE_MS);
@@ -440,7 +582,7 @@ export default function Home() {
           #about-section:before {
             left: 50%;
             transform: translateX(-50%);
-            top:clamp(450px, 5vw, 600px);
+            top:clamp(700px, 5vw, 800px);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -650,7 +792,6 @@ export default function Home() {
           width: 20px; height: 1px;
           background: rgba(200,169,110,0.3);
         }
-
         /* ── Capability pills ── */
         .cap-pill {
           display: inline-flex;
@@ -786,7 +927,7 @@ export default function Home() {
         </div>
 
         <div className="showcase-strip">
-          <div className="showcase-card " onClick={() => { setSelectedProduction(productions[0]); setIsVideoModalOpen(true); }}>
+          <div className="showcase-card reveal" onClick={() => { setSelectedProduction(productions[0]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://static01.nyt.com/images/2024/04/11/multimedia/11outisders-review1-jplc/11outisders-review1-jplc-articleLarge.jpg?quality=75&auto=webp&disable=upscale" alt="The Outsiders" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -799,7 +940,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="showcase-card  reveal-delay-1" onClick={() => { setSelectedProduction(productions[1]); setIsVideoModalOpen(true); }}>
+          <div className="showcase-card reveal reveal-delay-1" onClick={() => { setSelectedProduction(productions[1]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://res.cloudinary.com/signature-theatre/image/upload/c_fill%2Cg_face%2Ch_1204%2Cw_2140/f_auto/q_auto/v1749741852/9.George_Abud_Nixon_and_the_cast_of_The_Untitled_Unauthorized_Hunter_S._Thompson_Musical_at_Signature_Theatre._Photo_by_Daniel_Rader?_a=BAAAV6DQ" alt="Hunter S. Thompson" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -812,7 +953,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="showcase-card  reveal-delay-2" onClick={() => { setSelectedProduction(productions[2]); setIsVideoModalOpen(true); }}>
+          <div className="showcase-card reveal reveal-delay-2" onClick={() => { setSelectedProduction(productions[2]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://cdn.prod.website-files.com/6501ca9890bd9fd3f1044d12/685c0bbfa8c73ffbaac06110_Press%20Photo%20%2318.avif" alt="Always Something There" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -825,7 +966,7 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="showcase-card  reveal-delay-3" onClick={() => { setSelectedProduction(productions[3]); setIsVideoModalOpen(true); }}>
+          <div className="showcase-card reveal reveal-delay-3" onClick={() => { setSelectedProduction(productions[3]); setIsVideoModalOpen(true); }}>
             <img className="card-img" src="https://www.theoldglobe.org/link/1dd6434ca76e4389b300dc5a0a79335e.aspx" alt="The Lorax" />
             <div className="card-overlay"></div>
             <div className="card-play">
@@ -849,48 +990,79 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="capabilities-grid">
-          <div className="cap-visual reveal">
-            <img src="https://images.unsplash.com/photo-1645548979753-8fd5fd389aa2?q=80&w=1071&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Camera in theatre" />
-            <div className="cap-visual-badge">
-              <div className="badge-num">4K</div>
-              <div className="badge-text">Cinema-grade<br />capture · RAW</div>
+
+
+
+        <div
+          ref={trackRef2}
+          data-sticky-scroll="track"
+          style={{ position: "relative" }}
+        >
+          {/* ── Sticky panel — pins to top while the scroller below is consumed ── */}
+          <div
+            data-sticky-scroll="panel"
+            className="cap-sticky"
+          >
+            <div className="capabilities-grid">
+              <div className="cap-visual">
+                <img
+                  src={imgSrc}
+                  alt="Capability visual"
+                  style={{
+                    transition: "opacity 0.4s ease",
+                  }}
+                />
+                <div className="cap-visual-badge">
+                  <div className="badge-num">4K</div>
+                  <div className="badge-text">
+                    Cinema-grade
+                    <br />
+                    capture · RAW
+                  </div>
+                </div>
+              </div>
+
+              <div className="cap-content">
+                <div
+                  className="cap-list"
+                  ref={listRef}
+                  style={{
+                    transform: `translateY(${listTranslateY}px)`,
+                    transition: "transform 0.13s linear", // tiny smoothing, optional
+                  }}
+                >
+                  {CAP_ITEMS.map((item, i) => (
+                    <div
+                      key={item.num}
+                      className={`cap-item ${
+                        i === activeIndex ? " active" : ""
+                      }`}
+                    >
+                      {/* <div className="cap-num">{item.num}</div> */}
+                      <div style={{margin: '0 auto'}}>
+                        <div className="cap-item-title">{item.title}</div>
+                        <p className="cap-item-desc">{item.desc}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="cap-content">
-            <div className="cap-list">
-              <div className="cap-item reveal">
-                <div className="cap-num">01</div>
-                <div>
-                  <div className="cap-item-title">Live Performance Videography</div>
-                  <p className="cap-item-desc">Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.</p>
-                </div>
-              </div>
-              <div className="cap-item reveal reveal-delay-1">
-                <div className="cap-num">02</div>
-                <div>
-                  <div className="cap-item-title">Archival & Documentation</div>
-                  <p className="cap-item-desc">Broadcast-quality archival footage created for producers, directors, and Tony Award submission packages.</p>
-                </div>
-              </div>
-              <div className="cap-item reveal reveal-delay-2">
-                <div className="cap-num">03</div>
-                <div>
-                  <div className="cap-item-title">Production Photography</div>
-                  <p className="cap-item-desc">Still photography for press kits, playbills, marketing campaigns, and the iconic editorial moments that define a production.</p>
-                </div>
-              </div>
-              <div className="cap-item reveal reveal-delay-3">
-                <div className="cap-num">04</div>
-                <div>
-                  <div className="cap-item-title">Promotional Trailers</div>
-                  <p className="cap-item-desc">Cinematic short-form trailers that capture the visceral energy of your show and drive audiences to the box office.</p>
-                </div>
-              </div>
-            </div>
-          </div>
+          {/*
+            "scroller" — an empty div that creates the scroll budget.
+            Exactly mirrors micro1's h_intro_scroller.
+            As this scrolls past, the sticky panel above stays pinned and
+            activeIndex advances. Once this div is fully past the viewport,
+            the sticky panel naturally releases and scrolls away.
+          */}
+          <div
+            data-sticky-scroll="scroller"
+            style={{ height: `${SCROLLER_HEIGHT}px` }}
+          />
         </div>
+
       </section>
 
 
@@ -900,7 +1072,7 @@ export default function Home() {
           <div className="ticker-track" ref={trackRef}>
             {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
               <span
-                className={`ticker-item${i === 0 || i === TICKER_ITEMS.length ? ' ticker-item--active' : ''}`}
+                className={`ticker-item`}
                 key={i}
               >
                 {item}<span className="ticker-dot" />
@@ -1021,7 +1193,7 @@ export default function Home() {
             {/* ── Capabilities ── */}
             <div
               className={`reveal ${visible ? "in" : ""}`}
-              style={{ transitionDelay: "0.35s", marginTop: 50, marginBottom: 70 }}
+              style={{ marginTop: 50, marginBottom: 70 }}
             >
               <div style={{
                 display: "flex",
@@ -1140,7 +1312,8 @@ export default function Home() {
               <div style={{ flex: 1, height: 1, background: "rgba(200,169,110,0.1)" }} />
             </div>
 
-            <div className="theatre-grid reveal">
+            <div className="theatre-grid reveal"
+            style={{ transitionDelay: "0.35s" }}>
               {[
                 {
                   name: "The Old Globe",
