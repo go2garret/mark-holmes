@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from 'react';
+import StickyTextScroll from './components/StickyTextScroll';
 
 export default function Home() {
   type Production = {
@@ -982,88 +983,8 @@ export default function Home() {
       </section>
 
       {/* ══════════ CAPABILITIES ══════════ */}
-      <section id="capabilities">
-        <div className="section-header" style={{padding:0, marginBottom:0}}>
-          <div>
-            <div className="section-label reveal">Technical Excellence</div>
-            <h2 className="reveal reveal-delay-1">Crafted for the<br /><strong>Broadway standard.</strong></h2>
-          </div>
-        </div>
 
-
-
-
-        <div
-          ref={trackRef2}
-          data-sticky-scroll="track"
-          style={{ position: "relative" }}
-        >
-          {/* ── Sticky panel — pins to top while the scroller below is consumed ── */}
-          <div
-            data-sticky-scroll="panel"
-            className="cap-sticky"
-          >
-            <div className="capabilities-grid">
-              <div className="cap-visual">
-                <img
-                  src={imgSrc}
-                  alt="Capability visual"
-                  style={{
-                    transition: "opacity 0.4s ease",
-                  }}
-                />
-                <div className="cap-visual-badge">
-                  <div className="badge-num">4K</div>
-                  <div className="badge-text">
-                    Cinema-grade
-                    <br />
-                    capture · RAW
-                  </div>
-                </div>
-              </div>
-
-              <div className="cap-content">
-                <div
-                  className="cap-list"
-                  ref={listRef}
-                  style={{
-                    transform: `translateY(${listTranslateY}px)`,
-                    transition: "transform 0.13s linear", // tiny smoothing, optional
-                  }}
-                >
-                  {CAP_ITEMS.map((item, i) => (
-                    <div
-                      key={item.num}
-                      className={`cap-item ${
-                        i === activeIndex ? " active" : ""
-                      }`}
-                    >
-                      {/* <div className="cap-num">{item.num}</div> */}
-                      <div style={{margin: '0 auto'}}>
-                        <div className="cap-item-title">{item.title}</div>
-                        <p className="cap-item-desc">{item.desc}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/*
-            "scroller" — an empty div that creates the scroll budget.
-            Exactly mirrors micro1's h_intro_scroller.
-            As this scrolls past, the sticky panel above stays pinned and
-            activeIndex advances. Once this div is fully past the viewport,
-            the sticky panel naturally releases and scrolls away.
-          */}
-          <div
-            data-sticky-scroll="scroller"
-            style={{ height: `${SCROLLER_HEIGHT}px` }}
-          />
-        </div>
-
-      </section>
+      <StickyTextScroll />
 
 
       {/* ══════════ ABOUT ══════════ */}
