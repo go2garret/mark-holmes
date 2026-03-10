@@ -36,7 +36,7 @@ export default function StickyTextScroll() {
 
     useEffect(() => {
     const calculate = () => {
-        const DVH_PADDING = window.innerHeight * 0.5;
+        const DVH_PADDING = window.innerHeight * 0.4;
         setScrollerHeight(CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING);
     };
     calculate();
