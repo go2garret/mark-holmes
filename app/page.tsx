@@ -342,31 +342,31 @@ export default function Home() {
 
   useEffect(() => {
     // Cursor tracking
-    const cursor = document.getElementById('cursor');
-    const ring = document.getElementById('cursorRing');
-    let mx = 0, my = 0, rx = 0, ry = 0;
+    // const cursor = document.getElementById('cursor');
+    // const ring = document.getElementById('cursorRing');
+    // let mx = 0, my = 0, rx = 0, ry = 0;
 
-    if (cursor && ring) {
-      const cursorEl = cursor;
-      const ringEl = ring;
+    // if (cursor && ring) {
+    //   const cursorEl = cursor;
+    //   const ringEl = ring;
 
-      document.addEventListener('mousemove', (e) => {
-        mx = e.clientX;
-        my = e.clientY;
+    //   document.addEventListener('mousemove', (e) => {
+    //     mx = e.clientX;
+    //     my = e.clientY;
 
-        cursorEl.style.left = mx + 'px';
-        cursorEl.style.top  = my + 'px';
-      });
+    //     cursorEl.style.left = mx + 'px';
+    //     cursorEl.style.top  = my + 'px';
+    //   });
 
-      function animateRing() {
-        rx += (mx - rx) * 0.14;
-        ry += (my - ry) * 0.14;
-        ringEl.style.left = rx + 'px';
-        ringEl.style.top  = ry + 'px';
-        requestAnimationFrame(animateRing);
-      }
-      animateRing();
-    }
+    //   function animateRing() {
+    //     rx += (mx - rx) * 0.14;
+    //     ry += (my - ry) * 0.14;
+    //     ringEl.style.left = rx + 'px';
+    //     ringEl.style.top  = ry + 'px';
+    //     requestAnimationFrame(animateRing);
+    //   }
+    //   animateRing();
+    // }
 
     // Nav scroll
     const navbar = document.getElementById('navbar');
@@ -837,8 +837,8 @@ export default function Home() {
       `}</style>
 
       {/* Custom cursor */}
-      <div className="cursor" id="cursor"></div>
-      <div className="cursor-ring" id="cursorRing"></div>
+      {/* <div className="cursor" id="cursor"></div> */}
+      {/* <div className="cursor-ring" id="cursorRing"></div> */}
 
       {/* ══════════ NAV ══════════ */}
       <nav id="navbar">
@@ -854,8 +854,8 @@ export default function Home() {
         <ul className="nav-links">
           <li><a href="#showcase">Work</a></li>
           <li><a href="#capabilities">Services</a></li>
-          <li><a href="#">About</a></li>
-          <li><a href="#">San Diego</a></li>
+          <li><a href="#about-section">About</a></li>
+          <li><a href="#about-section">San Diego</a></li>
         </ul>
         <button className="nav-cta" onClick={() => setIsModalOpen(true)}>Book a Production</button>
       </nav>

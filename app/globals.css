@@ -24,7 +24,7 @@ body {
   font-family: 'Jost', sans-serif;
   font-weight: 300;
   overflow-x: hidden;
-  cursor: none;
+  cursor: auto;
 }
 
 /* ── CUSTOM CURSOR ── */
@@ -33,11 +33,13 @@ body {
   width: 10px; height: 10px;
   background: var(--gold);
   border-radius: 50%;
+  border: none !important;
   pointer-events: none;
   z-index: 9999;
   transform: translate(-50%, -50%);
   transition: width .25s, height .25s, opacity .25s;
   mix-blend-mode: difference;
+  display: none;
 }
 .cursor-ring {
   position: fixed; top: 0; left: 0;
@@ -92,7 +94,7 @@ nav.scrolled {
   display: flex; gap: 40px; list-style: none;
 }
 .nav-links a {
-  color: var(--muted);
+  color: var(--off-white);
   text-decoration: none;
   font-size: 11px;
   letter-spacing: 0.22em;
@@ -115,7 +117,7 @@ nav.scrolled {
   color: var(--black); background: var(--gold);
   padding: 9px 22px; border: none;
   font-family: 'Jost', sans-serif;
-  cursor: none;
+  cursor: pointer;
   transition: background .3s, transform .2s;
 }
 .nav-cta:hover { background: var(--gold-light); transform: scale(1.03); }
@@ -125,7 +127,7 @@ nav.scrolled {
   display: none;
   background: none;
   border: none;
-  cursor: none;
+  cursor: pointer;
   padding: 4px;
   color: var(--off-white);
   line-height: 0;
@@ -266,7 +268,7 @@ h1 em {
   font-weight: 400;
   letter-spacing: 0.28em;
   text-transform: uppercase;
-  cursor: none;
+  cursor: pointer;
   text-decoration: none;
   display: inline-block;
   transition: background .4s, border-color .4s, color .3s, letter-spacing .3s;
@@ -653,7 +655,8 @@ h2 strong {
   font-family: 'Jost', sans-serif;
   font-size: 11px; font-weight: 400;
   letter-spacing: 0.22em; text-transform: uppercase;
-  cursor: none; text-decoration: none;
+  cursor: pointer;
+  text-decoration: none;
   display: inline-block;
   transition: background .3s, color .3s, transform .2s;
   flex-shrink: 0;
@@ -1085,8 +1088,12 @@ footer::before {
     padding: 60px 0;
   }
 
+  .cap-sticky {
+      top: 10px;
+  }
+
   .capabilities-grid {
-    margin-top: 100px;
+    margin-top: 50px;
     height: 100vh;
   }
 
@@ -1134,7 +1141,7 @@ footer::before {
 }
 .mobile-menu-close {
   position: absolute; top: 24px; right: 24px;
-  font-size: 32px; background: none; border: none; color: var(--off-white); cursor: none;
+  font-size: 32px; background: none; border: none; color: var(--off-white); cursor: pointer;
 }
 .mobile-links { list-style: none; text-align: center; }
 .mobile-links li { margin: 16px 0; }
@@ -1149,7 +1156,7 @@ footer::before {
   border: none;
   font-size: 24px;
   color: var(--off-white);
-  cursor: none;
+  cursor: pointer;
   width: 32px; height: 32px;
   display: flex; align-items: center; justify-content: center;
 }
