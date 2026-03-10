@@ -32,6 +32,13 @@ export default function StickyTextScroll() {
 		},
 	];
 
+    useEffect(() => {
+    CAP_ITEMS.forEach((item) => {
+        const img = new Image();
+        img.src = item.image;
+    });
+    }, []);
+
 	const [scrollerHeight, setScrollerHeight] = useState(0);
 
 	useEffect(() => {
