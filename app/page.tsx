@@ -219,7 +219,7 @@ export default function Home() {
   const PX_PER_ITEM = 550;
   const SCROLLER_HEIGHT = CAP_ITEMS.length * PX_PER_ITEM;
 
-  const trackRef2 = useRef<HTMLElement>(null);
+  const trackRef2 = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
   const [imgSrc, setImgSrc] = useState(CAP_ITEMS[0].image);
   const [imgFading, setImgFading] = useState(false);
