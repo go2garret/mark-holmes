@@ -512,6 +512,26 @@ h2 strong {
   overflow: hidden;
 }
 
+.top-shadow {
+    z-index: 5;
+    background-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0));
+    width: 100%;
+    height: 15%;
+    position: absolute;
+    inset: 0% 0% auto;
+    transform: translateY(-1%);
+}
+
+.bottom-shadow {
+    z-index: 5;
+    background-image: linear-gradient(0deg, black, rgba(0, 0, 0, 0));
+    width: 100%;
+    height: 40%;
+    position: absolute;
+    inset: auto 0% 0%;
+    transform: translateY(1%);
+}
+
 .capabilities-grid-wrapper {
   height: 100vh;
   overflow: hidden;
@@ -521,13 +541,20 @@ h2 strong {
   overflow: hidden;
 }
 
-.cap-visual {
+.cap-visual-wrapper {
   position: relative;
   height: 580px;
   overflow: hidden;
   width: 50%;
   z-index: 100;
   background: var(--black);
+}
+
+.cap-visual {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
 }
 .cap-visual img {
   width: 100%;
@@ -557,7 +584,9 @@ h2 strong {
 .cap-content {
   width: 50%;
   padding: 64px 64px 64px 72px;
-  display: flex; flex-direction: column; justify-content: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 }
 .cap-list {
   margin-top: 40px;
@@ -616,10 +645,12 @@ h2 strong {
 /* .cap-item:hover .cap-item-title { color: var(--gold-light); } */
 .cap-item-desc {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(14px, 2vw, 22px);
+  font-size: clamp(14px, 15vw, 28px);
   color: var(--light-gray);
-  line-height: 1.7;
-  letter-spacing: 0.01em;
+  line-height: 1.2;
+  letter-spacing: 0.005em;
+  font-style: italic;
+  font-weight: 400;
 }
 
 /* ── FOOTER / CTA STRIP ── */
@@ -1258,4 +1289,9 @@ footer::before {
     border-bottom: none !important;
     border-right: 1px solid rgba(242,190,96,0.08) !important;
   }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
