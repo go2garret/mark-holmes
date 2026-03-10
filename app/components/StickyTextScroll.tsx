@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const LERP_FACTOR = 0.5; // 0.05 = slower/dreamier, 0.15 = snappier
+const LERP_FACTOR = 0.25; // 0.05 = slower/dreamier, 0.15 = snappier
 
 export default function StickyTextScroll() {
   const CAP_ITEMS = [
@@ -32,9 +32,21 @@ export default function StickyTextScroll() {
     },
   ];
 
-  const PX_PER_ITEM     = 600;
+    const [scrollerHeight, setScrollerHeight] = useState(0);
+
+    useEffect(() => {
+    const calculate = () => {
+        const DVH_PADDING = window.innerHeight * 2.5;
+        setScrollerHeight(CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING);
+    };
+    calculate();
+    window.addEventListener("resize", calculate);
+    return () => window.removeEventListener("resize", calculate);
+    }, []);
+
+  const PX_PER_ITEM     = 400;
   const DVH_PADDING     = typeof window !== "undefined" ? window.innerHeight * 1.5 : 1200;
-  const SCROLLER_HEIGHT = CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING;
+//   const SCROLLER_HEIGHT = CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING;
 
   const trackRef       = useRef<HTMLDivElement>(null);
   const listRef        = useRef<HTMLDivElement>(null);
@@ -66,7 +78,7 @@ export default function StickyTextScroll() {
       if (!el) return;
 
       const scrolledIn = -el.getBoundingClientRect().top;
-      const progress   = Math.max(0, Math.min(scrolledIn / SCROLLER_HEIGHT, 1));
+      const progress   = Math.max(0, Math.min(scrolledIn / scrollerHeight, 1));
 
       //targetYRef.current = -(progress * totalTravelRef.current);
       targetYRef.current = -(progress * totalTravelRef.current * SENSITIVITY);
@@ -80,7 +92,7 @@ export default function StickyTextScroll() {
     window.addEventListener("scroll", onScroll, { passive: true });
     onScroll();
     return () => window.removeEventListener("scroll", onScroll);
-  }, []);
+  }, [CAP_ITEMS, scrollerHeight]);
 
   // RAF loop — lerps current toward target each frame
   useEffect(() => {
@@ -114,7 +126,7 @@ export default function StickyTextScroll() {
         </div>
       </div>
 
-      <div ref={trackRef} style={{ height: SCROLLER_HEIGHT }}>
+      <div ref={trackRef} style={{ height: scrollerHeight }}>
         <div className="cap-sticky">
           <div className="capabilities-grid">
             <div className="cap-visual">
