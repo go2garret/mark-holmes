@@ -45,7 +45,7 @@ export default function StickyTextScroll() {
 		const calculate = () => {
             let DVH_PADDING = window.innerHeight * 0.4;
             if (window.innerHeight < 900) {
-                DVH_PADDING = window.innerHeight * -0.6;
+                DVH_PADDING = window.innerHeight * 3;
             }
             // else if (window.innerHeight < 1200) {
             //     DVH_PADDING = window.innerHeight * -1;
@@ -61,8 +61,8 @@ export default function StickyTextScroll() {
 	}, []);
 
 	const PX_PER_ITEM = 400;
-	const DVH_PADDING =
-		typeof window !== "undefined" ? window.innerHeight * 1.5 : 1200;
+	// const DVH_PADDING =
+	// 	typeof window !== "undefined" ? window.innerHeight * 1.5 : 1200;
 	//   const SCROLLER_HEIGHT = CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING;
 
 	const trackRef = useRef<HTMLDivElement>(null);
@@ -71,7 +71,7 @@ export default function StickyTextScroll() {
 	const targetYRef = useRef(0);
 	const currentYRef = useRef(0);
 	const rafIdRef = useRef<number>(0);
-	const SENSITIVITY = 2; // increase to scroll faster through items
+	const SENSITIVITY = window.innerHeight > 1300 ? 1.5 : 1.2; // increase to scroll faster through items
 
 	const [activeIndex, setActiveIndex] = useState(0);
 

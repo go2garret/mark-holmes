@@ -2,6 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react';
 import StickyTextScroll from './components/StickyTextScroll';
+import BookingModal from './components/BookingModal';
 
 export default function Home() {
   type Production = {
@@ -1473,7 +1474,7 @@ export default function Home() {
       </footer>
 
       {/* Modal */}
-      <div className={`modal-overlay ${isModalOpen ? 'open' : ''}`} onClick={() => setIsModalOpen(false)}>
+      {/* <div className={`modal-overlay ${isModalOpen ? 'open' : ''}`} onClick={() => setIsModalOpen(false)}>
         <div className="modal-content p-8" onClick={(e) => e.stopPropagation()}>
           <button className="modal-close" onClick={() => setIsModalOpen(false)}>&times;</button>
           <form className="modal-form">
@@ -1484,7 +1485,11 @@ export default function Home() {
             <button type="submit" className="btn-primary">Submit</button>
           </form>
         </div>
-      </div>
+      </div> */}
+      <BookingModal
+        isModalOpen={isModalOpen}
+        setIsModalOpen={setIsModalOpen}
+      />
 
       {/* Video Modal */}
       <div className={`fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isVideoModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsVideoModalOpen(false)}>
