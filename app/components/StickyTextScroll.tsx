@@ -71,7 +71,7 @@ export default function StickyTextScroll() {
 	const targetYRef = useRef(0);
 	const currentYRef = useRef(0);
 	const rafIdRef = useRef<number>(0);
-	const SENSITIVITY = window.innerHeight > 1300 ? 1.5 : 1.2; // increase to scroll faster through items
+	const SENSITIVITY = 1.5; // window.innerHeight > 1300 ? 1.5 : 1.2; // increase to scroll faster through items
 
 	const [activeIndex, setActiveIndex] = useState(0);
 
