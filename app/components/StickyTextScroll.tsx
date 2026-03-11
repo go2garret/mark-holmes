@@ -75,37 +75,6 @@ export default function StickyTextScroll() {
 
 	const [activeIndex, setActiveIndex] = useState(0);
 
-    useEffect(() => {
-        let lastWidth = window.innerWidth;
-
-        const calculate = () => {
-            const DVH_PADDING =
-                window.innerHeight < 900
-                    ? window.innerHeight * 3
-                    : window.innerHeight * 0.4;
-            setScrollerHeight(CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING);
-        };
-
-        calculate(); // run once on mount
-
-        let debounceTimer: ReturnType<typeof setTimeout>;
-        const onResize = () => {
-            // Only recalculate on width changes (orientation/window resize),
-            // NOT on height-only changes (mobile browser chrome hiding/showing)
-            if (window.innerWidth !== lastWidth) {
-                lastWidth = window.innerWidth;
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(calculate, 150);
-            }
-        };
-
-        window.addEventListener("resize", onResize);
-        return () => {
-            window.removeEventListener("resize", onResize);
-            clearTimeout(debounceTimer);
-        };
-    }, []);
-
 	// Measure list travel distance
 	useEffect(() => {
 		const measure = () => {
@@ -154,25 +123,34 @@ export default function StickyTextScroll() {
 	}, [CAP_ITEMS, scrollerHeight]);
 
 	// RAF loop — lerps current toward target each frame
-	useEffect(() => {
-		const tick = () => {
-			const target = targetYRef.current;
-			const current = currentYRef.current;
-			const next = current + (target - current) * LERP_FACTOR;
+    // RAF loop — lerps current toward target each frame
+    useEffect(() => {
+        const tick = () => {
+            const el = trackRef.current;
+            const inView = el
+                ? el.getBoundingClientRect().bottom > 0 &&
+                el.getBoundingClientRect().top < window.innerHeight
+                : false;
 
-			if (Math.abs(target - next) > 0.01) {
-				currentYRef.current = next;
-				if (listRef.current) {
-					listRef.current.style.transform = `translate3d(0, ${next}px, 0)`;
-				}
-			}
+            if (inView) {
+                const target = targetYRef.current;
+                const current = currentYRef.current;
+                const next = current + (target - current) * LERP_FACTOR;
 
-			rafIdRef.current = requestAnimationFrame(tick);
-		};
+                if (Math.abs(target - next) > 0.01) {
+                    currentYRef.current = next;
+                    if (listRef.current) {
+                        listRef.current.style.transform = `translate3d(0, ${next}px, 0)`;
+                    }
+                }
+            }
 
-		rafIdRef.current = requestAnimationFrame(tick);
-		return () => cancelAnimationFrame(rafIdRef.current);
-	}, []);
+            rafIdRef.current = requestAnimationFrame(tick);
+        };
+
+        rafIdRef.current = requestAnimationFrame(tick);
+        return () => cancelAnimationFrame(rafIdRef.current);
+    }, []);
 
 	return (
 		<section id="capabilities">
