@@ -75,6 +75,37 @@ export default function StickyTextScroll() {
 
 	const [activeIndex, setActiveIndex] = useState(0);
 
+    useEffect(() => {
+        let lastWidth = window.innerWidth;
+
+        const calculate = () => {
+            const DVH_PADDING =
+                window.innerHeight < 900
+                    ? window.innerHeight * 3
+                    : window.innerHeight * 0.4;
+            setScrollerHeight(CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING);
+        };
+
+        calculate(); // run once on mount
+
+        let debounceTimer: ReturnType<typeof setTimeout>;
+        const onResize = () => {
+            // Only recalculate on width changes (orientation/window resize),
+            // NOT on height-only changes (mobile browser chrome hiding/showing)
+            if (window.innerWidth !== lastWidth) {
+                lastWidth = window.innerWidth;
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(calculate, 150);
+            }
+        };
+
+        window.addEventListener("resize", onResize);
+        return () => {
+            window.removeEventListener("resize", onResize);
+            clearTimeout(debounceTimer);
+        };
+    }, []);
+
 	// Measure list travel distance
 	useEffect(() => {
 		const measure = () => {
