@@ -514,7 +514,7 @@ h2 strong {
 
 .top-shadow {
     z-index: 5;
-    background-image: linear-gradient(180deg, black, rgba(0, 0, 0, 0));
+    background-image: linear-gradient(180deg, var(--black), rgba(0, 0, 0, 0));
     width: 100%;
     height: 15%;
     position: absolute;
@@ -524,7 +524,7 @@ h2 strong {
 
 .bottom-shadow {
     z-index: 5;
-    background-image: linear-gradient(0deg, black, rgba(0, 0, 0, 0));
+    background-image: linear-gradient(0deg, var(--black), rgba(0, 0, 0, 0));
     width: 100%;
     height: 40%;
     position: absolute;
@@ -1033,6 +1033,10 @@ footer::before {
     margin-top: 80px;
   }
 
+  .cap-visual-wrapper {
+    display: none !important;
+  }
+
   .cap-sticky {
       height: calc(100dvh - 100px);
       top: 10px;
@@ -1129,6 +1133,10 @@ footer::before {
   .capabilities-grid {
     margin-top: 50px;
     height: 100vh;
+  }
+
+  .cap-visual-wrapper {
+    display: none;
   }
 
   .cap-visual, .cap-content { width: 100%; padding: 32px; }

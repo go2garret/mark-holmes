@@ -10,7 +10,7 @@ export default function StickyTextScroll() {
 			num: "01",
 			title: "Live Performance Videography",
 			desc: "Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.",
-			image: "audience.jpg",
+			image: "stage-dancers.jpg",
 		},
 		{
 			num: "02",
@@ -43,7 +43,16 @@ export default function StickyTextScroll() {
 
 	useEffect(() => {
 		const calculate = () => {
-			const DVH_PADDING = window.innerHeight * 0.4;
+            let DVH_PADDING = window.innerHeight * 0.4;
+            if (window.innerHeight < 900) {
+                DVH_PADDING = window.innerHeight * -0.6;
+            }
+            // else if (window.innerHeight < 1200) {
+            //     DVH_PADDING = window.innerHeight * -1;
+            // }
+
+			// const DVH_PADDING = window.innerHeight > 1000 ? window.innerHeight * 0.4 : window.innerHeight * -1;
+            console.log("DVH_PADDING:", DVH_PADDING, window.innerHeight);
 			setScrollerHeight(CAP_ITEMS.length * PX_PER_ITEM + DVH_PADDING);
 		};
 		calculate();
