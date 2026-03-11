@@ -584,9 +584,17 @@ h2 strong {
 .cap-content {
   width: 50%;
   padding: 64px 64px 64px 72px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  flex-flow: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 35rem;
+    height: 800px;
+    max-height: 100vh;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    overflow: hidden;
 }
 .cap-list {
   margin-top: 40px;
@@ -607,6 +615,7 @@ h2 strong {
   position: relative;
   overflow: hidden;
   text-align: center;
+  height: 300px;
 }
 .cap-item.active {
   color: var(--gold-light);
