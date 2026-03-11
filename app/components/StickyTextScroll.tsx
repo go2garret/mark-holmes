@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 
-const LERP_FACTOR = 0.25; // 0.05 = slower/dreamier, 0.15 = snappier
+const LERP_FACTOR = 0.05; // 0.05 = slower/dreamier, 0.15 = snappier
 
 export default function StickyTextScroll() {
 	const CAP_ITEMS = [
