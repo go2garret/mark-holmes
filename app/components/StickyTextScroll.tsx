@@ -161,7 +161,7 @@ export default function StickyTextScroll() {
 			<div ref={trackRef} style={{ height: scrollerHeight }}>
 				<div className="cap-sticky">
 					<div className="capabilities-grid">
-                        <div className="cap-visual-wrapper">
+                        {/* <div className="cap-visual-wrapper">
                             <div className="cap-visual absolute inset-0">
                                 <img
                                     key={CAP_ITEMS[activeIndex].image}
@@ -172,7 +172,7 @@ export default function StickyTextScroll() {
                                     }}
                                 />
                             </div>
-                        </div>
+                        </div> */}
 
 						<div className="cap-content">
                             <div className="top-shadow"></div>
