@@ -134,7 +134,7 @@ export default function StickyScrollIntro() {
           flex-flow: column;
           justify-content: center;
           align-items: center;
-          min-height: 100vh;
+          min-height: 100dvh;
           padding-top: 10vh;
           padding-bottom: 30vh;
           display: flex;
