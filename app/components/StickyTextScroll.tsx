@@ -176,25 +176,27 @@ export default function StickyTextScroll() {
 
 						<div className="cap-content">
                             <div className="top-shadow"></div>
-							<div ref={listRef} className="cap-list">
-								{CAP_ITEMS.map((item, i) => (
-									<div
-										key={item.num}
-										className={`cap-item ${i === activeIndex ? "active" : ""}`}>
-										<div>
-											<div className="cap-num">
-												{item.num}
-											</div>
-											<h3 className="cap-item-title">
-												{item.title}
-											</h3>
-											<p className="cap-item-desc">
-												{item.desc}
-											</p>
-										</div>
-									</div>
-								))}
-							</div>
+                            <div className="cap-list-wrapper">
+                                <div ref={listRef} className="cap-list">
+                                    {CAP_ITEMS.map((item, i) => (
+                                        <div
+                                            key={item.num}
+                                            className={`cap-item ${i === activeIndex ? "active" : ""}`}>
+                                            <div>
+                                                <div className="cap-num">
+                                                    {item.num}
+                                                </div>
+                                                <h3 className="cap-item-title">
+                                                    {item.title}
+                                                </h3>
+                                                <p className="cap-item-desc">
+                                                    {item.desc}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
                             <div className="bottom-shadow"></div>
 						</div>
 					</div>
