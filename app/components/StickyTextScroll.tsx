@@ -24,14 +24,14 @@ const SCROLL_SENSITIVITY = 0.6;
 const ITEM_HEIGHT_REM = 9;
 const ITEM_GAP_REM = 10;
 
-function remToPx(rem) {
+function remToPx(rem: number) {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
 export default function StickyScrollIntro() {
-  const listRef = useRef(null);
-  const sectionRef = useRef(null);
-  const rafRef = useRef(null);
+    const listRef = useRef<HTMLDivElement | null>(null);
+    const sectionRef = useRef<HTMLElement | null>(null);
+  const rafRef = useRef<number | null>(null);
   const scrollState = useRef({
     current: 0,
     target: 0,
@@ -51,7 +51,7 @@ export default function StickyScrollIntro() {
       return (ITEMS.length - 1) * (itemH + gap);
     }
 
-    function clamp(val, min, max) {
+    function clamp(val: number, min: number, max: number) {
       return Math.min(Math.max(val, min), max);
     }
 
