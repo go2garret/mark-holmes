@@ -989,7 +989,7 @@ export default function Home() {
 
 
       {/* ══════════ ABOUT ══════════ */}
-      <section id="about-section" ref={sectionRef}>
+      <section id="about-section" ref={sectionRef} className="snap-y snap-mandatory overflow-y-scroll">
         <div className="ticker-wrap">
           <div className="ticker-track" ref={trackRef}>
             {[...TICKER_ITEMS, ...TICKER_ITEMS].map((item, i) => (
@@ -1003,7 +1003,7 @@ export default function Home() {
           </div>
         </div>
         {/* ── Main content ── */}
-        <div className="about-section-inner">
+        <div className="about-section-inner snap-always snap-start">
 
           {/* ── Portrait + identity block ── */}
           <div className="bio-wrapper">
