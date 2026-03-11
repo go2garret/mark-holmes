@@ -499,7 +499,8 @@ h2 strong {
 .cap-sticky {
     position: sticky;
     top: 0;
-    height: calc(100dvh - 200px);
+    /* height: calc(100dvh - 200px); */
+    height: 100dvh;
     overflow: hidden;
 }
 
