@@ -1,4 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
+
+const LERP_FACTOR = 0.07;
+const ITEM_HEIGHT_REM = 9;
+const ITEM_GAP_REM = 10;
+// How many px of page scroll per px of list travel (higher = slower, more deliberate)
+const SCROLL_MULTIPLIER = 2.2;
 
 const ITEMS = [
   {
@@ -18,113 +24,88 @@ const ITEMS = [
   },
 ];
 
-const LERP_FACTOR = 0.07;
-const VELOCITY_DECAY = 0.88;
-const SCROLL_SENSITIVITY = 0.6;
-const ITEM_HEIGHT_REM = 9;
-const ITEM_GAP_REM = 10;
-
-function remToPx(rem: number) {
+function remToPx(rem: number): number {
   return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
+function getMaxScroll(): number {
+  const itemH = remToPx(ITEM_HEIGHT_REM);
+  const gap = remToPx(ITEM_GAP_REM);
+  return (ITEMS.length - 1) * (itemH + gap);
+}
+
+function clamp(val: number, min: number, max: number): number {
+  return Math.min(Math.max(val, min), max);
+}
+
 export default function StickyScrollIntro() {
-    const listRef = useRef<HTMLDivElement | null>(null);
-    const sectionRef = useRef<HTMLElement | null>(null);
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
   const rafRef = useRef<number | null>(null);
-  const scrollState = useRef({
-    current: 0,
-    target: 0,
-    velocity: 0,
-    touching: false,
-    lastTouchY: 0,
-  });
+  const scrollState = useRef({ current: 0, target: 0 });
 
   useEffect(() => {
     const section = sectionRef.current;
+    const wrapper = wrapperRef.current;
     const list = listRef.current;
-    if (!section || !list) return;
+    if (!section || !wrapper || !list) return;
 
-    function getMaxScroll() {
-      const itemH = remToPx(ITEM_HEIGHT_REM);
-      const gap = remToPx(ITEM_GAP_REM);
-      return (ITEMS.length - 1) * (itemH + gap);
+    const maxScroll = getMaxScroll();
+
+    // Size the wrapper so the sticky section has enough scroll runway
+    function setWrapperHeight() {
+        if (!wrapper) return;
+
+      wrapper.style.height = `${window.innerHeight + maxScroll * SCROLL_MULTIPLIER}px`;
     }
+    setWrapperHeight();
 
-    function clamp(val: number, min: number, max: number) {
-      return Math.min(Math.max(val, min), max);
-    }
-
+    // RAF loop: smoothly lerp current → target and apply transform
     function tick() {
       const state = scrollState.current;
-      state.target = clamp(state.target, 0, getMaxScroll());
-
-      // Lerp current toward target
       const diff = state.target - state.current;
       state.current += diff * LERP_FACTOR;
-
-      // Snap to target when very close
       if (Math.abs(diff) < 0.05) state.current = state.target;
-
       if (list) {
         list.style.transform = `translate3d(0px, ${-state.current}px, 0px)`;
       }
-
       rafRef.current = requestAnimationFrame(tick);
     }
-
     rafRef.current = requestAnimationFrame(tick);
 
-    function onWheel(e: WheelEvent) {
-      const state = scrollState.current;
-      const max = getMaxScroll();
-      const atTop = state.target <= 0 && e.deltaY < 0;
-      const atBottom = state.target >= max && e.deltaY > 0;
+    // Scroll handler: drive target from page scroll position
+    function onScroll() {
+      if (!wrapper) return;
 
-      if (!atTop && !atBottom) {
-        e.preventDefault();
-      }
+      const wrapperRect = wrapper.getBoundingClientRect();
 
-      state.velocity += e.deltaY * SCROLL_SENSITIVITY;
-      state.target = clamp(state.target + state.velocity, 0, max);
-      state.velocity *= VELOCITY_DECAY;
+      // -wrapperRect.top = how many px the page has scrolled past the wrapper's top edge
+      const scrollIntoWrapper = -wrapperRect.top;
+
+      // Outside the sticky range — do nothing (keeps list frozen at 0 or maxScroll)
+      if (scrollIntoWrapper < 0 || wrapperRect.bottom <= 0) return;
+
+      // Total scrollable distance while section is stuck
+      const scrollRange = wrapper.offsetHeight - window.innerHeight;
+
+      // Map page scroll progress [0, scrollRange] → list target [0, maxScroll]
+      const progress = clamp(scrollIntoWrapper, 0, scrollRange);
+      scrollState.current.target = (progress / scrollRange) * maxScroll;
     }
 
-    function onTouchStart(e: TouchEvent) {
-      scrollState.current.touching = true;
-      scrollState.current.lastTouchY = e.touches[0].clientY;
-      scrollState.current.velocity = 0;
+    function onResize() {
+      setWrapperHeight();
+      onScroll(); // recalculate target after resize
     }
 
-    function onTouchMove(e: TouchEvent) {
-      const state = scrollState.current;
-      if (!state.touching) return;
-      const dy = state.lastTouchY - e.touches[0].clientY;
-      state.lastTouchY = e.touches[0].clientY;
-      state.velocity = dy * 2.5;
-      state.target = clamp(state.target + state.velocity, 0, getMaxScroll());
-      const atTop = state.target <= 0 && dy < 0;
-      const atBottom = state.target >= getMaxScroll() && dy > 0;
-      if (!atTop && !atBottom) e.preventDefault();
-    }
-
-    function onTouchEnd() {
-      scrollState.current.touching = false;
-    }
-
-    section.addEventListener("wheel", onWheel, { passive: false });
-    section.addEventListener("touchstart", onTouchStart, { passive: true });
-    section.addEventListener("touchmove", onTouchMove, { passive: false });
-    section.addEventListener("touchend", onTouchEnd, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
 
     return () => {
-        if (rafRef.current !== null) {
-            cancelAnimationFrame(rafRef.current);
-        }
-      section.removeEventListener("wheel", onWheel);
-      section.removeEventListener("touchstart", onTouchStart);
-      section.removeEventListener("touchmove", onTouchMove);
-      section.removeEventListener("touchend", onTouchEnd);
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -141,9 +122,12 @@ export default function StickyScrollIntro() {
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
 
-        body {
-          background: #0a0805;
-          min-height: 300vh;
+        body { background: #0a0805; }
+
+        /* ─── Tall wrapper provides scroll runway ─── */
+        .h_intro_scroll_wrapper {
+          /* height set dynamically via JS */
+          position: relative;
         }
 
         .h_intro_main {
@@ -179,8 +163,6 @@ export default function StickyScrollIntro() {
         }
 
         .h_intro_wrapper {
-          grid-column-gap: 7rem;
-          grid-row-gap: 7rem;
           flex-flow: column;
           justify-content: center;
           align-items: center;
@@ -216,8 +198,6 @@ export default function StickyScrollIntro() {
 
         .h_intro_container {
           z-index: 4;
-          grid-column-gap: 5rem;
-          grid-row-gap: 5rem;
           flex-flow: column;
           width: 100%;
           height: 9rem;
@@ -226,8 +206,6 @@ export default function StickyScrollIntro() {
         }
 
         .h_intro_list {
-          grid-column-gap: 10rem;
-          grid-row-gap: 10rem;
           flex-flow: column;
           justify-content: center;
           align-items: center;
@@ -273,50 +251,59 @@ export default function StickyScrollIntro() {
 
         @keyframes hintFade {
           0%, 100% { opacity: 0.4; transform: translateX(-50%) translateY(0); }
-          50% { opacity: 0.9; transform: translateX(-50%) translateY(4px); }
+          50%       { opacity: 0.9; transform: translateX(-50%) translateY(4px); }
         }
       `}</style>
 
-      <section className="h_intro_main" ref={sectionRef}>
-        <div className="s_h_bg-img">
-          <img
-            src="https://cdn.prod.website-files.com/68b095121300aebde21ab3f4/6984d83b4ad1a367ccb73217_image%20498%20(1).jpg"
-            loading="lazy"
-            alt=""
-            className="s_h_bg-img-inner"
-          />
-          <div className="s_h_img-overlay" />
-        </div>
-
-        <div className="h_intro_wrapper">
-          <div className="h_intro_shadow" />
-          <div className="h_intro_container">
-            <div
-              data-sticky-text-scroll="target"
-              className="h_intro_list"
-              ref={listRef}
-            >
-              {ITEMS.map((item) => (
-                <p
-                  key={item.id}
-                  data-sticky-text-scroll="item"
-                  className={item.className}
-                >
-                  {item.text}
-                </p>
-              ))}
-            </div>
+      {/* Tall wrapper — provides the scroll distance the sticky section consumes */}
+      <div ref={wrapperRef} className="h_intro_scroll_wrapper">
+        <section className="h_intro_main" ref={sectionRef}>
+          <div className="s_h_bg-img">
+            <img
+              src="https://cdn.prod.website-files.com/68b095121300aebde21ab3f4/6984d83b4ad1a367ccb73217_image%20498%20(1).jpg"
+              loading="lazy"
+              alt=""
+              className="s_h_bg-img-inner"
+            />
+            <div className="s_h_img-overlay" />
           </div>
-          <div className="h_intro_shadow is-bottom" />
-        </div>
 
-        <div className="scroll-hint">
-          <span>scroll</span>
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <path d="M6 2v8M3 7l3 3 3-3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </div>
-      </section>
+          <div className="h_intro_wrapper">
+            <div className="h_intro_shadow" />
+            <div className="h_intro_container">
+              <div
+                data-sticky-text-scroll="target"
+                className="h_intro_list"
+                ref={listRef}
+              >
+                {ITEMS.map((item) => (
+                  <p
+                    key={item.id}
+                    data-sticky-text-scroll="item"
+                    className={item.className}
+                  >
+                    {item.text}
+                  </p>
+                ))}
+              </div>
+            </div>
+            <div className="h_intro_shadow is-bottom" />
+          </div>
+
+          <div className="scroll-hint">
+            <span>scroll</span>
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M6 2v8M3 7l3 3 3-3"
+                stroke="currentColor"
+                strokeWidth="1.2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </div>
+        </section>
+      </div>
     </>
   );
 }
