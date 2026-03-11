@@ -75,7 +75,7 @@ export default function StickyScrollIntro() {
 
     rafRef.current = requestAnimationFrame(tick);
 
-    function onWheel(e) {
+    function onWheel(e: WheelEvent) {
       const state = scrollState.current;
       const max = getMaxScroll();
       const atTop = state.target <= 0 && e.deltaY < 0;
@@ -90,13 +90,13 @@ export default function StickyScrollIntro() {
       state.velocity *= VELOCITY_DECAY;
     }
 
-    function onTouchStart(e) {
+    function onTouchStart(e: TouchEvent) {
       scrollState.current.touching = true;
       scrollState.current.lastTouchY = e.touches[0].clientY;
       scrollState.current.velocity = 0;
     }
 
-    function onTouchMove(e) {
+    function onTouchMove(e: TouchEvent) {
       const state = scrollState.current;
       if (!state.touching) return;
       const dy = state.lastTouchY - e.touches[0].clientY;
@@ -118,7 +118,9 @@ export default function StickyScrollIntro() {
     section.addEventListener("touchend", onTouchEnd, { passive: true });
 
     return () => {
-      cancelAnimationFrame(rafRef.current);
+        if (rafRef.current !== null) {
+            cancelAnimationFrame(rafRef.current);
+        }
       section.removeEventListener("wheel", onWheel);
       section.removeEventListener("touchstart", onTouchStart);
       section.removeEventListener("touchmove", onTouchMove);
