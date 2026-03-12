@@ -197,8 +197,10 @@ nav.scrolled {
 /* Eyebrow label */
 .hero-label {
   display: flex; align-items: center; gap: 16px;
-  font-size: 12px; letter-spacing: 0.42em;
-  text-transform: uppercase; color: var(--gold);
+  font-size: 12px;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  color: var(--gold);
   margin-bottom: 28px;
   opacity: 0;
   animation: fadeIn .8s 2s forwards;
@@ -216,7 +218,7 @@ h1 {
   line-height: 0.9;
   letter-spacing: 0.025em;
   color: var(--off-white);
-  text-shadow: 0 4px 48px rgba(0,0,0,0.6);
+  text-shadow: 0 4px 48px rgba(0,0,0,0.6), 0 1px 12px rgba(0,0,0,0.6);
 }
 h1 em {
   font-style: italic;
@@ -225,7 +227,7 @@ h1 em {
   font-size: 0.68em;
   letter-spacing: 0.08em;
   display: block;
-  text-shadow: 0 2px 32px rgba(0,0,0,0.5);
+  text-shadow: 0 2px 32px rgba(0,0,0,0.5), 0 1px 8px rgba(0,0,0,0.5);
 }
 
 /* Thin gold rule dividing headline from sub
@@ -240,11 +242,11 @@ h1 em {
 .hero-sub {
   font-family: 'Cormorant Garamond', serif;
   font-style: italic;
-  font-size: 24px;
+  font-size: clamp(18px, 3vw, 24px);
   color: rgba(240, 235, 227, 1);
   max-width: 480px;
   line-height: 1.5;
-  text-shadow: 0 2px 16px rgba(0,0,0,0.8);
+  text-shadow: 0 2px 16px rgba(0,0,0,0.8), 0 1px 6px rgba(0,0,0,0.8);
   opacity: 0;
   animation: fadeIn .8s 2.2s forwards;
   margin-top: 30px;

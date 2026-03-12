@@ -15,7 +15,14 @@ export default function Home() {
     videoUrl: string
   };
 
+  // Mobile menu
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const openMenu  = () => { setIsMenuOpen(true);  document.body.style.overflow = 'hidden'; };
+  const closeMenu = () => { setIsMenuOpen(false); document.body.style.overflow = ''; };
+
+  // Booking Modal
   const [isModalOpen, setIsModalOpen] = useState(false);
+  // Video Modal
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [selectedProduction, setSelectedProduction] = useState<Production | null>(null);
 
@@ -59,46 +66,6 @@ export default function Home() {
   ];
 
   // About us
-
-  const THEATRES = [
-    {
-      name: "The Old Globe",
-      location: "Balboa Park, San Diego",
-      role: "Primary Videographer",
-      productions: [
-        { title: "The Outsiders", year: "2024", note: "Broadway Transfer" },
-        { title: "The Lorax", year: "2018", note: "Archival" },
-        { title: "Sense & Sensibility", year: "2019", note: "World Premiere" },
-        { title: "Into the Woods", year: "2022", note: "Promotional" },
-        { title: "The Merry Wives of Windsor", year: "2023", note: "Documentation" },
-      ],
-    },
-    {
-      name: "La Jolla Playhouse",
-      location: "UC San Diego Campus",
-      role: "Documentary & Promo",
-      productions: [
-        { title: "The Untitled Unauthorized Hunter S. Thompson Musical", year: "2023", note: "World Premiere" },
-        { title: "Swept Away", year: "2023", note: "Broadway Transfer" },
-        { title: "Bhangin' It", year: "2019", note: "World Premiere" },
-        { title: "Once On This Island", year: "2020", note: "Archival" },
-        { title: "Cambodian Rock Band", year: "2021", note: "Documentary" },
-      ],
-    },
-    {
-      name: "Cygnet Theatre",
-      location: "Old Town, San Diego",
-      role: "Archival & Interviews",
-      productions: [
-        { title: "Always Something There", year: "2024", note: "Archival" },
-        { title: "Spring Awakening", year: "2022", note: "Documentation" },
-        { title: "Passing Strange", year: "2021", note: "Promotional" },
-        { title: "Cabaret", year: "2019", note: "Archival" },
-        { title: "Fun Home", year: "2023", note: "Documentation" },
-      ],
-    },
-  ];
-
   const CAPABILITIES = [
     { label: "4K Cinema RAW", icon: "◈" },
     { label: "Multi-Camera", icon: "◈" },
@@ -121,148 +88,6 @@ export default function Home() {
     "Swept Away · Broadway Transfer",
     "San Diego's Premier Theatre Videographer",
   ];
-
-  // Cap items scroll
-  const CAP_ITEMS = [
-    {
-      num: "01",
-      title: "Live Performance Videography",
-      desc: "Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.",
-      image: "audience.jpg",
-    },
-    {
-      num: "02",
-      title: "Archival & Documentation",
-      desc: "Broadcast-quality archival footage created for producers, directors, and Tony Award submission packages.",
-      image: "https://images.unsplash.com/photo-1524712245354-2c4e5e7121c0?q=80&w=1071&auto=format&fit=crop",
-    },
-    {
-      num: "03",
-      title: "Production Photography",
-      desc: "Still photography for press kits, playbills, marketing campaigns, and the iconic editorial moments that define a production.",
-      image: "https://images.unsplash.com/photo-1645548979753-8fd5fd389aa2?q=80&w=1071&auto=format&fit=crop",
-    },
-    {
-      num: "04",
-      title: "Promotional Trailers",
-      desc: "Cinematic short-form trailers that capture the visceral energy of your show and drive audiences to the box office.",
-      image: "https://images.unsplash.com/photo-1478720568477-152d9b164e26?q=80&w=1071&auto=format&fit=crop",
-    },
-  ];
-
-  // Add this state alongside your existing ones
-  const [listTranslateY, setListTranslateY] = useState(0);
-  const listRef = useRef<HTMLDivElement>(null);
-
-  const totalTravelRef = useRef(0);
-
-  useEffect(() => {
-    const calculateTravel = () => {
-      const listEl = listRef.current;
-      if (!listEl) return;
-      const items = listEl.querySelectorAll<HTMLElement>(".cap-item");
-      if (items.length > 1) {
-        totalTravelRef.current =
-          items[items.length - 1].offsetTop - items[0].offsetTop;
-      }
-    };
-
-    calculateTravel();
-    window.addEventListener("resize", calculateTravel);
-    return () => window.removeEventListener("resize", calculateTravel);
-  }, []);
-
-  useEffect(() => {
-    let rafId: number;
-
-    const onScroll = () => {
-      // Cancel any pending frame — only process the latest scroll position
-      cancelAnimationFrame(rafId);
-
-      rafId = requestAnimationFrame(() => {
-        const el = trackRef2.current;
-        if (!el) return;
-
-        const scrolledIn = -el.getBoundingClientRect().top;
-
-        if (scrolledIn <= 0) {
-          setActiveIndex(0);
-          if (listRef.current) {
-            listRef.current.style.transform = "translateY(0px)";
-          }
-          return;
-        }
-
-        const progress = Math.min(scrolledIn / SCROLLER_HEIGHT, 1);
-
-        const newIndex = Math.min(
-          Math.floor(progress * CAP_ITEMS.length),
-          CAP_ITEMS.length - 1
-        );
-        setActiveIndex(newIndex); // still fine — cheap index comparison
-
-        // Write transform directly to DOM, zero React overhead
-        if (listRef.current) {
-          const y = -progress * totalTravelRef.current;
-          listRef.current.style.transform = `translate3d(0, ${y}px, 0)`;
-        }
-      });
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      cancelAnimationFrame(rafId);
-    };
-  }, []);
-
-  // How many px of scroll each item stays active — tune this freely
-  const PX_PER_ITEM = 550;
-  const SCROLLER_HEIGHT = CAP_ITEMS.length * PX_PER_ITEM;
-
-  const trackRef2 = useRef<HTMLDivElement>(null);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [imgSrc, setImgSrc] = useState(CAP_ITEMS[0].image);
-  const [imgFading, setImgFading] = useState(false);
-
-  // Crossfade image when active item changes
-  // useEffect(() => {
-  //   const next = CAP_ITEMS[activeIndex].image;
-  //   if (next === imgSrc) return;
-  //   setImgFading(true);
-  //   const t = setTimeout(() => {
-  //     setImgSrc(next);
-  //     setImgFading(false);
-  //   }, 50);
-  //   return () => clearTimeout(t);
-  // }, [activeIndex]);
-
-  useEffect(() => {
-    const onScroll = () => {
-      const el = trackRef2.current;
-      if (!el) return;
-
-      // scrolledIn = how far the track's top edge has passed above the viewport top
-      // 0 = just reached top of screen, positive = scrolling through scroller budget
-      const scrolledIn = -el.getBoundingClientRect().top;
-
-      if (scrolledIn <= 0) {
-        setActiveIndex(0);
-        return;
-      }
-
-      const newIndex = Math.min(
-        Math.floor((scrolledIn / SCROLLER_HEIGHT) * CAP_ITEMS.length),
-        CAP_ITEMS.length - 1
-      );
-      setActiveIndex(newIndex);
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
 
   // Ticker state machine
   const trackRef = useRef<HTMLDivElement>(null);
@@ -315,18 +140,18 @@ export default function Home() {
 
   // Intersection observer for about section reveal
 
-  const [activeTheatre, setActiveTheatre] = useState(0);
+  // const [activeTheatre, setActiveTheatre] = useState(0);
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef(null);
 
-  useEffect(() => {
-    const obs = new IntersectionObserver(
-      ([e]) => { if (e.isIntersecting) setVisible(true); },
-      { threshold: 0.1 }
-    );
-    if (sectionRef.current) obs.observe(sectionRef.current);
-    return () => obs.disconnect();
-  }, []);
+  // useEffect(() => {
+  //   const obs = new IntersectionObserver(
+  //     ([e]) => { if (e.isIntersecting) setVisible(true); },
+  //     { threshold: 0.1 }
+  //   );
+  //   if (sectionRef.current) obs.observe(sectionRef.current);
+  //   return () => obs.disconnect();
+  // }, []);
 
     // prevent scroll when modal open
   useEffect(() => {
@@ -484,37 +309,37 @@ export default function Home() {
 
 
     // Mobile menu toggle logic
-    const navHamburger = document.getElementById('navHamburger');
-    const mobileMenu = document.getElementById('mobileMenu');
-    const mobileMenuClose = document.getElementById('mobileMenuClose');
+    // const navHamburger = document.getElementById('navHamburger');
+    // const mobileMenu = document.getElementById('mobileMenu');
+    // const mobileMenuClose = document.getElementById('mobileMenuClose');
 
-    if (navHamburger && mobileMenu && mobileMenuClose) {
+    // if (navHamburger && mobileMenu && mobileMenuClose) {
 
-      const toggleMenu = () => {
-        const isOpen = mobileMenu.classList.contains('open');
+    //   const toggleMenu = () => {
+    //     const isOpen = mobileMenu.classList.contains('open');
 
-        if (isOpen) {
-          mobileMenu.classList.remove('open');
-          document.body.style.overflow = '';
-        } else {
-          mobileMenu.classList.add('open');
-          document.body.style.overflow = 'hidden';
-        }
-      };
+    //     if (isOpen) {
+    //       mobileMenu.classList.remove('open');
+    //       document.body.style.overflow = '';
+    //     } else {
+    //       mobileMenu.classList.add('open');
+    //       document.body.style.overflow = 'hidden';
+    //     }
+    //   };
 
-      navHamburger.addEventListener('click', toggleMenu);
-      mobileMenuClose.addEventListener('click', toggleMenu);
+    //   navHamburger.addEventListener('click', toggleMenu);
+    //   mobileMenuClose.addEventListener('click', toggleMenu);
 
-      mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach(link => {
-        link.addEventListener('click', toggleMenu);
-      });
+    //   mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach(link => {
+    //     link.addEventListener('click', toggleMenu);
+    //   });
 
-      mobileMenu.addEventListener('click', (e) => {
-        if (e.target === mobileMenu) {
-          toggleMenu();
-        }
-      });
-    }
+    //   mobileMenu.addEventListener('click', (e) => {
+    //     if (e.target === mobileMenu) {
+    //       toggleMenu();
+    //     }
+    //   });
+    // }
 
   });
 
@@ -846,11 +671,11 @@ export default function Home() {
       <nav id="navbar">
         <a href="#" className="nav-logo"><span></span>Mark Holmes</a>
         {/* mobile hamburger toggle (appears on small screens) */}
-        <button className="nav-hamburger" id="navHamburger" aria-label="Open menu">
+        <button className="nav-hamburger" id="navHamburger" aria-label="Open menu" onClick={openMenu}>
           <svg width="20" height="14" viewBox="0 0 20 14" fill="none" xmlns="http://www.w3.org/2000/svg">
             <line x1="0" y1="1" x2="20" y2="1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <line x1="4" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-            <line x1="8" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="0" y1="7" x2="20" y2="7" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+            <line x1="0" y1="13" x2="20" y2="13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
           </svg>
         </button>
         <ul className="nav-links">
@@ -863,8 +688,11 @@ export default function Home() {
       </nav>
 
       {/* mobile menu overlay */}
-      <div id="mobileMenu" className="mobile-menu">
-        <button id="mobileMenuClose" className="mobile-menu-close" aria-label="Close menu">&times;</button>
+      <div id="mobileMenu"
+      className={`mobile-menu${isMenuOpen ? ' open' : ''}`}
+      onClick={(e) => { if (e.target === e.currentTarget) closeMenu(); }}>
+        <button id="mobileMenuClose" className="mobile-menu-close" aria-label="Close menu"
+        onClick={(e) => { if (e.target === e.currentTarget) closeMenu(); }}>&times;</button>
         <ul className="mobile-links">
           <li><a href="#showcase">Work</a></li>
           <li><a href="#capabilities">Services</a></li>
@@ -1487,18 +1315,7 @@ export default function Home() {
       </footer>
 
       {/* Modal */}
-      {/* <div className={`modal-overlay ${isModalOpen ? 'open' : ''}`} onClick={() => setIsModalOpen(false)}>
-        <div className="modal-content p-8" onClick={(e) => e.stopPropagation()}>
-          <button className="modal-close" onClick={() => setIsModalOpen(false)}>&times;</button>
-          <form className="modal-form">
-            <h2>Book a Production</h2>
-            <input type="text" placeholder="Name" required />
-            <input type="email" placeholder="Email" required />
-            <textarea placeholder="Message" required></textarea>
-            <button type="submit" className="btn-primary">Submit</button>
-          </form>
-        </div>
-      </div> */}
+
       <BookingModal
         isModalOpen={isModalOpen}
         setIsModalOpen={setIsModalOpen}

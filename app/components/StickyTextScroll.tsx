@@ -185,7 +185,7 @@ export default function StickyScrollIntro() {
           width: 100%;
           max-width: 35rem;
           height: 1000px; /*29rem;*/
-          max-height: 60vh;
+          max-height: 80vh;
           margin-left: auto;
           margin-right: auto;
           display: flex;
@@ -194,6 +194,24 @@ export default function StickyScrollIntro() {
           z-index: 2;
           padding: 0 1.25rem;
         }
+
+        .h_img_shadow {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 10rem;
+          background: linear-gradient(to bottom, var(--black) 0%, var(--black) 50%, transparent 100%);
+          z-index: 5;
+          pointer-events: none;
+        }
+
+        .h_img_shadow.is-bottom {
+          top: auto;
+          bottom: 0;
+          background: linear-gradient(to top, var(--black) 0%, var(--black) 50%, transparent 100%);
+        }
+
 
         .h_intro_shadow {
           position: absolute;
@@ -277,6 +295,7 @@ export default function StickyScrollIntro() {
       <div ref={wrapperRef} className="h_intro_scroll_wrapper">
 
         <section className="h_intro_main" ref={sectionRef}>
+          <div className="h_img_shadow" />
           <div className="s_h_bg-img">
             <img
               src="concert.webp"
@@ -288,7 +307,7 @@ export default function StickyScrollIntro() {
           </div>
 
           <div className="h_intro_wrapper">
-            <div className="h_intro_shadow" />
+            {/* <div className="h_intro_shadow" /> */}
             <div className="h_intro_container">
               <div
                 data-sticky-text-scroll="target"
@@ -312,8 +331,9 @@ export default function StickyScrollIntro() {
                 ))}
               </div>
             </div>
-            <div className="h_intro_shadow is-bottom" />
+            {/* <div className="h_intro_shadow is-bottom" /> */}
           </div>
+          <div className="h_img_shadow is-bottom" />
         </section>
       </div>
     </>
