@@ -163,6 +163,8 @@ export default function StickyScrollIntro() {
           inset: 0;
           z-index: 0;
           overflow: hidden;
+          filter: brightness(0.75) sepia(0.15);
+          opacity: 0.6;
         }
 
         .s_h_bg-img-inner {
@@ -272,6 +274,21 @@ export default function StickyScrollIntro() {
           50%       { opacity: 0.9; transform: translateX(-50%) translateY(4px); }
         }
       `}</style>
+
+
+
+        <div className="section-header mb-2! pt-8!">
+            <div>
+                <div className="section-label reveal visible">
+                    Technical Excellence
+                </div>
+                <h2 className="reveal reveal-delay-1 visible">
+                    Crafted for the
+                    <br />
+                    <strong>Broadway standard.</strong>
+                </h2>
+            </div>
+        </div>
 
       {/* Tall wrapper — provides the scroll distance the sticky section consumes */}
       <div ref={wrapperRef} className="h_intro_scroll_wrapper">
