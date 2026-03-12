@@ -279,7 +279,7 @@ export default function StickyScrollIntro() {
         <section className="h_intro_main" ref={sectionRef}>
           <div className="s_h_bg-img">
             <img
-              src="https://images.unsplash.com/photo-1617405207340-954e2e19755c"
+              src="concert.webp"
               loading="lazy"
               alt=""
               className="s_h_bg-img-inner"
