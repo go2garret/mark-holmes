@@ -7,130 +7,127 @@ const ITEM_GAP_REM = 10;
 const SCROLL_MULTIPLIER = 2.2;
 
 const ITEMS = [
-	{
-		id: 1,
-		num: "01",
-		title: "Live Performance Videography",
-		desc: "Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.",
-		image: "stage-dancers.jpg",
-		className: "h_intro_p is-1",
-	},
-	{
-		id: 2,
-		num: "02",
-		title: "Archival & Documentation",
-		desc: "Broadcast-quality archival footage created for producers, directors, and Tony Award submission packages.",
-		image: "stage-dancers.jpg",
-		className: "h_intro_p is-2",
-	},
-	{
-		id: 3,
-		num: "03",
-		title: "Production Photography",
-		desc: "Still photography for press kits, playbills, marketing campaigns, and the iconic editorial moments that define a production.",
-		image: "stage-dancers.jpg",
-		className: "h_intro_p is-3",
-	},
-	{
-		id: 4,
-		num: "04",
-		title: "Promotional Trailers",
-		desc: "Cinematic short-form trailers that capture the visceral energy of your show and drive audiences to the box office.",
-		image: "stage-dancers.jpg",
-		className: "h_intro_p is-4",
-	},
+  {
+    id: 1,
+    num: "01",
+    title: "Live Performance Videography",
+    desc: "Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.",
+    image: "stage-dancers.jpg",
+    className: "h_intro_p is-1",
+  },
+  {
+    id: 2,
+    num: "02",
+    title: "Archival & Documentation",
+    desc: "Broadcast-quality archival footage created for producers, directors, and Tony Award submission packages.",
+    image: "stage-dancers.jpg",
+    className: "h_intro_p is-2",
+  },
+  {
+    id: 3,
+    num: "03",
+    title: "Production Photography",
+    desc: "Still photography for press kits, playbills, marketing campaigns, and the iconic editorial moments that define a production.",
+    image: "stage-dancers.jpg",
+    className: "h_intro_p is-3",
+  },
+  {
+    id: 4,
+    num: "04",
+    title: "Promotional Trailers",
+    desc: "Cinematic short-form trailers that capture the visceral energy of your show and drive audiences to the box office.",
+    image: "stage-dancers.jpg",
+    className: "h_intro_p is-4",
+  },
 ];
 
 function remToPx(rem: number): number {
-	return (
-		rem * parseFloat(getComputedStyle(document.documentElement).fontSize)
-	);
+  return rem * parseFloat(getComputedStyle(document.documentElement).fontSize);
 }
 
 function getMaxScroll(): number {
-	const itemH = remToPx(ITEM_HEIGHT_REM);
-	const gap = remToPx(ITEM_GAP_REM);
-	return (ITEMS.length - 1) * (itemH + gap);
+  const itemH = remToPx(ITEM_HEIGHT_REM);
+  const gap = remToPx(ITEM_GAP_REM);
+  return (ITEMS.length - 1) * (itemH + gap);
 }
 
 function clamp(val: number, min: number, max: number): number {
-	return Math.min(Math.max(val, min), max);
+  return Math.min(Math.max(val, min), max);
 }
 
 export default function StickyScrollIntro() {
-	const listRef = useRef<HTMLDivElement | null>(null);
-	const sectionRef = useRef<HTMLElement | null>(null);
-	const wrapperRef = useRef<HTMLDivElement | null>(null);
-	const rafRef = useRef<number | null>(null);
-	const scrollState = useRef({ current: 0, target: 0 });
+  const listRef = useRef<HTMLDivElement | null>(null);
+  const sectionRef = useRef<HTMLElement | null>(null);
+  const wrapperRef = useRef<HTMLDivElement | null>(null);
+  const rafRef = useRef<number | null>(null);
+  const scrollState = useRef({ current: 0, target: 0 });
 
-	useEffect(() => {
-		const section = sectionRef.current;
-		const wrapper = wrapperRef.current;
-		const list = listRef.current;
-		if (!section || !wrapper || !list) return;
+  useEffect(() => {
+    const section = sectionRef.current;
+    const wrapper = wrapperRef.current;
+    const list = listRef.current;
+    if (!section || !wrapper || !list) return;
 
-		// Freeze the initial viewport height so mobile chrome show/hide never
-		// triggers a wrapper height change and jumps content below.
-		const frozenVH = window.innerHeight;
+    // Freeze the initial viewport height so mobile chrome show/hide never
+    // triggers a wrapper height change and jumps content below.
+    const frozenVH = window.innerHeight;
 
-		function getScrollRange(): number {
-			return getMaxScroll() * SCROLL_MULTIPLIER;
-		}
+    function getScrollRange(): number {
+      return getMaxScroll() * SCROLL_MULTIPLIER;
+    }
 
-		function setWrapperHeight() {
-			// frozenVH is constant — only scrollRange can change (rem-based, font resize)
-			if (wrapper) {
-				wrapper.style.height = `${frozenVH + getScrollRange()}px`;
-			}
-		}
-		setWrapperHeight();
+    function setWrapperHeight() {
+      // frozenVH is constant — only scrollRange can change (rem-based, font resize)
+      if (wrapper) {
+        wrapper.style.height = `${frozenVH + getScrollRange()}px`;
+      }
+    }
+    setWrapperHeight();
 
-		function tick() {
-			if (!list) return;
-			const state = scrollState.current;
-			const diff = state.target - state.current;
-			state.current += diff * LERP_FACTOR;
-			if (Math.abs(diff) < 0.05) state.current = state.target;
-			list.style.transform = `translate3d(0px, ${-state.current}px, 0px)`;
-			rafRef.current = requestAnimationFrame(tick);
-		}
-		rafRef.current = requestAnimationFrame(tick);
+    function tick() {
+      if (!list) return;
+      const state = scrollState.current;
+      const diff = state.target - state.current;
+      state.current += diff * LERP_FACTOR;
+      if (Math.abs(diff) < 0.05) state.current = state.target;
+      list.style.transform = `translate3d(0px, ${-state.current}px, 0px)`;
+      rafRef.current = requestAnimationFrame(tick);
+    }
+    rafRef.current = requestAnimationFrame(tick);
 
-		function onScroll() {
-			if (!wrapper) return;
+    function onScroll() {
+      if (!wrapper) return;
 
-			const wrapperRect = wrapper.getBoundingClientRect();
-			const scrollIntoWrapper = -wrapperRect.top;
-			if (scrollIntoWrapper < 0 || wrapperRect.bottom <= 0) return;
+      const wrapperRect = wrapper.getBoundingClientRect();
+      const scrollIntoWrapper = -wrapperRect.top;
+      if (scrollIntoWrapper < 0 || wrapperRect.bottom <= 0) return;
 
-			const scrollRange = getScrollRange();
-			const progress = clamp(scrollIntoWrapper, 0, scrollRange);
-			scrollState.current.target =
-				(progress / scrollRange) * getMaxScroll();
-		}
+      const scrollRange = getScrollRange();
+      const progress = clamp(scrollIntoWrapper, 0, scrollRange);
+      scrollState.current.target = (progress / scrollRange) * getMaxScroll();
+    }
 
-		function onResize() {
-			// Only update wrapper height for rem/font-size changes — NOT viewport height.
-			// Skipping frozenVH here is the key: it prevents mobile chrome
-			// collapse/expand from resizing the wrapper and jumping content below.
-			setWrapperHeight();
-			onScroll();
-		}
+    function onResize() {
+      // Only update wrapper height for rem/font-size changes — NOT viewport height.
+      // Skipping frozenVH here is the key: it prevents mobile chrome
+      // collapse/expand from resizing the wrapper and jumping content below.
+      setWrapperHeight();
+      onScroll();
+    }
 
-		window.addEventListener("scroll", onScroll, { passive: true });
-		window.addEventListener("resize", onResize, { passive: true });
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onResize, { passive: true });
 
-		return () => {
-			if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
-			window.removeEventListener("scroll", onScroll);
-			window.removeEventListener("resize", onResize);
-		};
-	}, []);
+    return () => {
+      if (rafRef.current !== null) cancelAnimationFrame(rafRef.current);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onResize);
+    };
+  }, []);
 
-	return (
-		<>
-			<style>{`
+  return (
+    <>
+      <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400&display=swap');
 
         :root {
@@ -162,8 +159,8 @@ export default function StickyScrollIntro() {
           inset: 0;
           z-index: 0;
           overflow: hidden;
-            filter: sepia(0.5) brightness(0.85);
-            opacity: 0.2;
+            filter: sepia(0.1);
+            opacity: 0.3;
         }
 
         .s_h_bg-img-inner {
@@ -186,7 +183,7 @@ export default function StickyScrollIntro() {
           width: 100%;
           max-width: 35rem;
           height: 1000px; /*29rem;*/
-          max-height: 80vh;
+          max-height: 60vh;
           margin-left: auto;
           margin-right: auto;
           display: flex;
@@ -213,16 +210,10 @@ export default function StickyScrollIntro() {
           top: 0;
           left: 0;
           right: 0;
-          height: 7rem;
-          background: linear-gradient(to bottom, var(--black) 0%, var(--black) 70%, transparent 100%);
+          height: 10rem;
+          background: linear-gradient(to bottom, var(--black) 0%, transparent 100%);
           z-index: 5;
           pointer-events: none;
-        }
-
-        .h_img_shadow.is-bottom {
-          top: auto;
-          bottom: 0;
-          background: linear-gradient(to top, var(--shadow-color) 0%, var(--black) 70%, transparent 100%);
         }
 
         .h_intro_shadow.is-bottom {
@@ -292,61 +283,64 @@ export default function StickyScrollIntro() {
         }
       `}</style>
 
-			{/* Tall wrapper — provides the scroll distance the sticky section consumes */}
-			<div ref={wrapperRef} className="h_intro_scroll_wrapper">
-				<div className="section-header mb-2! pt-12.5!">
-					<div>
-						<div className="section-label reveal visible">
-							Technical Excellence
-						</div>
-						<h2 className="reveal reveal-delay-1 visible">
-							Crafted for the
-							<br />
-							<strong>Broadway standard.</strong>
-						</h2>
-					</div>
-				</div>
 
-				<section className="h_intro_main" ref={sectionRef}>
-					<div className="h_img_shadow" />
-					<div className="s_h_bg-img">
-						<img
-							src="https://images.unsplash.com/photo-1617405207340-954e2e19755c"
-							loading="lazy"
-							alt=""
-							className="s_h_bg-img-inner"
-						/>
-						<div className="s_h_img-overlay" />
-					</div>
+      {/* Tall wrapper — provides the scroll distance the sticky section consumes */}
+      <div ref={wrapperRef} className="h_intro_scroll_wrapper">
 
-					<div className="h_intro_wrapper">
-						<div className="h_intro_shadow" />
-						<div className="h_intro_container">
-							<div
-								data-sticky-text-scroll="target"
-								className="h_intro_list"
-								ref={listRef}>
-								{ITEMS.map((item) => (
-									<p
-										key={item.id}
-										data-sticky-text-scroll="item"
-										className={item.className}>
-										<div className="cap-item-title">
-											{item.title}
-										</div>
+        <div className="section-header mb-2! pt-12.5!">
+            <div>
+                <div className="section-label reveal visible">
+                    Technical Excellence
+                </div>
+                <h2 className="reveal reveal-delay-1 visible">
+                    Crafted for the
+                    <br />
+                    <strong>Broadway standard.</strong>
+                </h2>
+            </div>
+        </div>
 
-										<div className="cap-item-desc">
-											{item.desc}
-										</div>
-									</p>
-								))}
-							</div>
-						</div>
-						<div className="h_intro_shadow is-bottom" />
-					</div>
-					<div className="h_img_shadow is-bottom" />
-				</section>
-			</div>
-		</>
-	);
+        <section className="h_intro_main" ref={sectionRef}>
+            <div className="h_img_shadow" />
+          <div className="s_h_bg-img">
+            <img
+              src="https://images.unsplash.com/photo-1617405207340-954e2e19755c"
+              loading="lazy"
+              alt=""
+              className="s_h_bg-img-inner"
+            />
+            <div className="s_h_img-overlay" />
+          </div>
+
+          <div className="h_intro_wrapper">
+            <div className="h_intro_shadow" />
+            <div className="h_intro_container">
+              <div
+                data-sticky-text-scroll="target"
+                className="h_intro_list"
+                ref={listRef}
+              >
+                {ITEMS.map((item) => (
+                    <p
+                        key={item.id}
+                        data-sticky-text-scroll="item"
+                        className={item.className}
+                    >
+                        <div className="cap-item-title">
+                        {item.title}
+                        </div>
+
+                        <div className="cap-item-desc">
+                        {item.desc}
+                        </div>
+                    </p>
+                ))}
+              </div>
+            </div>
+            <div className="h_intro_shadow is-bottom" />
+          </div>
+        </section>
+      </div>
+    </>
+  );
 }
