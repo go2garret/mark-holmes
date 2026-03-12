@@ -51,52 +51,51 @@ export default function StickyScrollIntro() {
     const list = listRef.current;
     if (!section || !wrapper || !list) return;
 
-    const maxScroll = getMaxScroll();
+    // Freeze the initial viewport height so mobile chrome show/hide never
+    // triggers a wrapper height change and jumps content below.
+    const frozenVH = window.innerHeight;
 
-    // Size the wrapper so the sticky section has enough scroll runway
+    function getScrollRange(): number {
+      return getMaxScroll() * SCROLL_MULTIPLIER;
+    }
+
     function setWrapperHeight() {
-        if (!wrapper) return;
-
-      wrapper.style.height = `${window.innerHeight + maxScroll * SCROLL_MULTIPLIER}px`;
+      // frozenVH is constant — only scrollRange can change (rem-based, font resize)
+      if (wrapper) {
+        wrapper.style.height = `${frozenVH + getScrollRange()}px`;
+      }
     }
     setWrapperHeight();
 
-    // RAF loop: smoothly lerp current → target and apply transform
     function tick() {
+      if (!list) return;
       const state = scrollState.current;
       const diff = state.target - state.current;
       state.current += diff * LERP_FACTOR;
       if (Math.abs(diff) < 0.05) state.current = state.target;
-      if (list) {
-        list.style.transform = `translate3d(0px, ${-state.current}px, 0px)`;
-      }
+      list.style.transform = `translate3d(0px, ${-state.current}px, 0px)`;
       rafRef.current = requestAnimationFrame(tick);
     }
     rafRef.current = requestAnimationFrame(tick);
 
-    // Scroll handler: drive target from page scroll position
     function onScroll() {
       if (!wrapper) return;
 
       const wrapperRect = wrapper.getBoundingClientRect();
-
-      // -wrapperRect.top = how many px the page has scrolled past the wrapper's top edge
       const scrollIntoWrapper = -wrapperRect.top;
-
-      // Outside the sticky range — do nothing (keeps list frozen at 0 or maxScroll)
       if (scrollIntoWrapper < 0 || wrapperRect.bottom <= 0) return;
 
-      // Total scrollable distance while section is stuck
-      const scrollRange = wrapper.offsetHeight - window.innerHeight;
-
-      // Map page scroll progress [0, scrollRange] → list target [0, maxScroll]
+      const scrollRange = getScrollRange();
       const progress = clamp(scrollIntoWrapper, 0, scrollRange);
-      scrollState.current.target = (progress / scrollRange) * maxScroll;
+      scrollState.current.target = (progress / scrollRange) * getMaxScroll();
     }
 
     function onResize() {
+      // Only update wrapper height for rem/font-size changes — NOT viewport height.
+      // Skipping frozenVH here is the key: it prevents mobile chrome
+      // collapse/expand from resizing the wrapper and jumping content below.
       setWrapperHeight();
-      onScroll(); // recalculate target after resize
+      onScroll();
     }
 
     window.addEventListener("scroll", onScroll, { passive: true });
