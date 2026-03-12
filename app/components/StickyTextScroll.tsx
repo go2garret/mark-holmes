@@ -9,18 +9,35 @@ const SCROLL_MULTIPLIER = 2.2;
 const ITEMS = [
   {
     id: 1,
-    text: "micro1 turns human brilliance into the force that drives the world's most ambitious AI.",
+    num: "01",
+    title: "Live Performance Videography",
+    desc: "Multi-camera 4K RAW capture of full productions, seamlessly edited to preserve every breath, pause, and crescendo of the performance.",
+    image: "stage-dancers.jpg",
     className: "h_intro_p is-1",
   },
   {
     id: 2,
-    text: "A model is only as good as its data, and beneath every breakthrough in AI, there's an orchestra of human expertise powering that data.",
+    num: "02",
+    title: "Archival & Documentation",
+    desc: "Broadcast-quality archival footage created for producers, directors, and Tony Award submission packages.",
+    image: "stage-dancers.jpg",
     className: "h_intro_p is-2",
   },
   {
     id: 3,
-    text: "micro1 conducts that orchestra, finding the sharpest minds and forging their expertise into the datasets that shape how AI reasons, adapts, and integrates into the future of humanity.",
+    num: "03",
+    title: "Production Photography",
+    desc: "Still photography for press kits, playbills, marketing campaigns, and the iconic editorial moments that define a production.",
+    image: "stage-dancers.jpg",
     className: "h_intro_p is-3",
+  },
+  {
+    id: 4,
+    num: "04",
+    title: "Promotional Trailers",
+    desc: "Cinematic short-form trailers that capture the visceral energy of your show and drive audiences to the box office.",
+    image: "stage-dancers.jpg",
+    className: "h_intro_p is-4",
   },
 ];
 
@@ -135,7 +152,7 @@ export default function StickyScrollIntro() {
           align-items: center;
           min-height: 100dvh;
           padding-top: 10vh;
-          padding-bottom: 30vh;
+          padding-bottom: 10vh;
           display: flex;
           position: sticky;
           top: 0;
@@ -146,6 +163,7 @@ export default function StickyScrollIntro() {
           inset: 0;
           z-index: 0;
           overflow: hidden;
+          display: none;
         }
 
         .s_h_bg-img-inner {
@@ -167,7 +185,7 @@ export default function StickyScrollIntro() {
           align-items: center;
           width: 100%;
           max-width: 35rem;
-          height: 29rem;
+          height: 1000px; /*29rem;*/
           max-height: 60vh;
           margin-left: auto;
           margin-right: auto;
@@ -199,9 +217,10 @@ export default function StickyScrollIntro() {
           z-index: 4;
           flex-flow: column;
           width: 100%;
-          height: 9rem;
+          height: 800px; /*9rem;*/
           position: relative;
           overflow: hidden;
+          padding-top: 4rem;
         }
 
         .h_intro_list {
@@ -228,6 +247,7 @@ export default function StickyScrollIntro() {
           display: flex;
           flex-shrink: 0;
           letter-spacing: 0.01em;
+          flex-direction: column;
         }
 
         .scroll-hint {
@@ -276,13 +296,19 @@ export default function StickyScrollIntro() {
                 ref={listRef}
               >
                 {ITEMS.map((item) => (
-                  <p
-                    key={item.id}
-                    data-sticky-text-scroll="item"
-                    className={item.className}
-                  >
-                    {item.text}
-                  </p>
+                    <p
+                        key={item.id}
+                        data-sticky-text-scroll="item"
+                        className={item.className}
+                    >
+                        <div className="cap-item-title">
+                        {item.title}
+                        </div>
+
+                        <div className="cap-item-desc">
+                        {item.desc}
+                        </div>
+                    </p>
                 ))}
               </div>
             </div>
