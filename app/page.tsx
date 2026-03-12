@@ -1289,7 +1289,7 @@ export default function Home() {
 
       {/* Video Modal */}
       <div className={`fixed inset-0 bg-black/90 z-9999 flex items-center justify-center p-4 transition-all duration-300 ${isVideoModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsVideoModalOpen(false)}>
-        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-screen overflow-y-auto relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
+        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-[100dvh] overflow-y-auto relative transition-all duration-500 translate-y-0`} onClick={(e) => e.stopPropagation()}>
           <button className="absolute top-4 right-4 text-white hover:text-[#f2be60] text-2xl z-50 w-8 h-8 flex items-center justify-center transition-colors" onClick={() => setIsVideoModalOpen(false)}>&times;</button>
 
             {selectedProduction ? (
