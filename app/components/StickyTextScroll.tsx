@@ -163,8 +163,6 @@ export default function StickyScrollIntro() {
           inset: 0;
           z-index: 0;
           overflow: hidden;
-          filter: brightness(0.75) sepia(0.15);
-          opacity: 0.6;
         }
 
         .s_h_bg-img-inner {
