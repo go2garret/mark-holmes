@@ -275,21 +275,6 @@ export default function StickyScrollIntro() {
         }
       `}</style>
 
-
-
-        <div className="section-header mb-2! pt-8!">
-            <div>
-                <div className="section-label reveal visible">
-                    Technical Excellence
-                </div>
-                <h2 className="reveal reveal-delay-1 visible">
-                    Crafted for the
-                    <br />
-                    <strong>Broadway standard.</strong>
-                </h2>
-            </div>
-        </div>
-
       {/* Tall wrapper — provides the scroll distance the sticky section consumes */}
       <div ref={wrapperRef} className="h_intro_scroll_wrapper">
 
