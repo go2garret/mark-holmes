@@ -136,6 +136,10 @@ export default function StickyScrollIntro() {
           --bg-overlay: rgba(10, 8, 5, 0.55);
         }
 
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body { background: #0a0805; }
+
         /* ─── Tall wrapper provides scroll runway ─── */
         .h_intro_scroll_wrapper {
           /* height set dynamically via JS */
@@ -159,8 +163,7 @@ export default function StickyScrollIntro() {
           inset: 0;
           z-index: 0;
           overflow: hidden;
-            filter: sepia(0.1);
-            opacity: 0.3;
+          display: none;
         }
 
         .s_h_bg-img-inner {
@@ -200,18 +203,6 @@ export default function StickyScrollIntro() {
           right: 0;
           height: 6rem;
           background: linear-gradient(to bottom, var(--shadow-color) 0%, transparent 100%);
-          z-index: 5;
-          pointer-events: none;
-          display: none;
-        }
-
-        .h_img_shadow {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 10rem;
-          background: linear-gradient(to bottom, var(--black) 0%, transparent 100%);
           z-index: 5;
           pointer-events: none;
         }
@@ -283,28 +274,13 @@ export default function StickyScrollIntro() {
         }
       `}</style>
 
-
       {/* Tall wrapper — provides the scroll distance the sticky section consumes */}
       <div ref={wrapperRef} className="h_intro_scroll_wrapper">
 
-        <div className="section-header mb-2! pt-12.5!">
-            <div>
-                <div className="section-label reveal visible">
-                    Technical Excellence
-                </div>
-                <h2 className="reveal reveal-delay-1 visible">
-                    Crafted for the
-                    <br />
-                    <strong>Broadway standard.</strong>
-                </h2>
-            </div>
-        </div>
-
         <section className="h_intro_main" ref={sectionRef}>
-            <div className="h_img_shadow" />
           <div className="s_h_bg-img">
             <img
-              src="https://images.unsplash.com/photo-1617405207340-954e2e19755c"
+              src="https://cdn.prod.website-files.com/68b095121300aebde21ab3f4/6984d83b4ad1a367ccb73217_image%20498%20(1).jpg"
               loading="lazy"
               alt=""
               className="s_h_bg-img-inner"
