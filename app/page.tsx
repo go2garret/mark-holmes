@@ -985,19 +985,6 @@ export default function Home() {
 
       {/* ══════════ CAPABILITIES ══════════ */}
 
-			<div className="section-header mb-2! mt-10!">
-				<div>
-					<div className="section-label reveal visible">
-						Technical Excellence
-					</div>
-					<h2 className="reveal reveal-delay-1 visible">
-						Crafted for the
-						<br />
-						<strong>Broadway standard.</strong>
-					</h2>
-				</div>
-			</div>
-
       <StickyTextScroll />
 
 
