@@ -646,7 +646,7 @@ h2 strong {
 }
 .cap-item-title {
   font-family: 'Cormorant Garamond', serif;
-  font-size: 44px;
+  font-size: clamp(25px, 5vw, 44px);
   line-height: 1em;
   font-weight: 400;
   color: var(--off-white);
@@ -655,16 +655,18 @@ h2 strong {
   text-align: center;
   position: relative;
   font-style: italic;
+  text-shadow: 0 2px 32px rgba(0,0,0,0.5), 0 1px 8px rgba(0,0,0,0.5);
 }
 /* .cap-item:hover .cap-item-title { color: var(--gold-light); } */
 .cap-item-desc {
   font-family: 'Cormorant Garamond', serif;
-  font-size: clamp(14px, 15vw, 28px);
+  font-size: clamp(15px, 5vw, 24px);
   color: var(--light-gray);
   line-height: 1.2;
-  letter-spacing: 0.005em;
+  letter-spacing: 0.05em;
   font-style: italic;
   font-weight: 400;
+  text-shadow: 0 2px 32px rgba(0,0,0,0.5), 0 1px 8px rgba(0,0,0,0.5);
 }
 
 /* ── FOOTER / CTA STRIP ── */

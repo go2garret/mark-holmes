@@ -43,7 +43,7 @@ export default function Home() {
       year: "2023",
       type: "World Premiere",
       description: "An electrifying musical journey through the mind of gonzo journalism's legendary figure, blending rock music, theatrical innovation, and immersive storytelling techniques.",
-      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+      videoUrl: "https://www.youtube.com/embed/W9h8mtILc4c"
     },
     {
       id: 3,
@@ -52,7 +52,7 @@ export default function Home() {
       year: "2024",
       type: "Archival Documentation",
       description: "A meticulously preserved record of this contemporary theater piece, showcasing our expertise in capturing intimate theatrical moments with professional-grade equipment.",
-      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+      videoUrl: "https://www.youtube.com/embed/3Z1joUDlH0M"
     },
     {
       id: 4,
@@ -61,7 +61,7 @@ export default function Home() {
       year: "2018",
       type: "Archival Documentation",
       description: "Preserving the magic of this beloved Dr. Seuss adaptation, featuring innovative puppetry and environmental themes brought to life through expert cinematography.",
-      videoUrl: "https://www.youtube.com/embed/1EDuVkoy5rY"
+      videoUrl: "https://www.youtube.com/embed/XuKvI7MXCuM"
     }
   ];
 
@@ -155,7 +155,7 @@ export default function Home() {
 
     // prevent scroll when modal open
   useEffect(() => {
-    if (isVideoModalOpen || isModalOpen) {
+    if (isVideoModalOpen || isModalOpen || isMenuOpen) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -165,7 +165,7 @@ export default function Home() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [isVideoModalOpen, isModalOpen]);
+  }, [isVideoModalOpen, isModalOpen, isMenuOpen]);
 
   useEffect(() => {
     // Cursor tracking
@@ -306,40 +306,6 @@ export default function Home() {
     });
 
     spotlightAnimate();
-
-
-    // Mobile menu toggle logic
-    // const navHamburger = document.getElementById('navHamburger');
-    // const mobileMenu = document.getElementById('mobileMenu');
-    // const mobileMenuClose = document.getElementById('mobileMenuClose');
-
-    // if (navHamburger && mobileMenu && mobileMenuClose) {
-
-    //   const toggleMenu = () => {
-    //     const isOpen = mobileMenu.classList.contains('open');
-
-    //     if (isOpen) {
-    //       mobileMenu.classList.remove('open');
-    //       document.body.style.overflow = '';
-    //     } else {
-    //       mobileMenu.classList.add('open');
-    //       document.body.style.overflow = 'hidden';
-    //     }
-    //   };
-
-    //   navHamburger.addEventListener('click', toggleMenu);
-    //   mobileMenuClose.addEventListener('click', toggleMenu);
-
-    //   mobileMenu.querySelectorAll<HTMLAnchorElement>('a').forEach(link => {
-    //     link.addEventListener('click', toggleMenu);
-    //   });
-
-    //   mobileMenu.addEventListener('click', (e) => {
-    //     if (e.target === mobileMenu) {
-    //       toggleMenu();
-    //     }
-    //   });
-    // }
 
   });
 
@@ -1322,8 +1288,8 @@ export default function Home() {
       />
 
       {/* Video Modal */}
-      <div className={`fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-4 transition-all duration-300 ${isVideoModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsVideoModalOpen(false)}>
-        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-[90vh] overflow-y-auto relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
+      <div className={`fixed inset-0 bg-black/90 z-9999 flex items-center justify-center p-4 transition-all duration-300 ${isVideoModalOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`} onClick={() => setIsVideoModalOpen(false)}>
+        <div className={`bg-black rounded-lg w-full max-w-6xl max-h-screen overflow-y-auto relative transition-all duration-500 ${isVideoModalOpen ? 'translate-y-0' : 'translate-y-8'}`} onClick={(e) => e.stopPropagation()}>
           <button className="absolute top-4 right-4 text-white hover:text-[#f2be60] text-2xl z-50 w-8 h-8 flex items-center justify-center transition-colors" onClick={() => setIsVideoModalOpen(false)}>&times;</button>
 
             {selectedProduction ? (
@@ -1355,10 +1321,9 @@ export default function Home() {
                         flexShrink: 0,
                       }} />
                       <span style={{
-                        color: '#f2be60',
-                        fontSize: '0.65rem',
-                        fontWeight: 600,
-                        letterSpacing: '0.18em',
+                        color: 'var(--gold)',
+                        fontSize: '10px',
+                        letterSpacing: '0.3em',
                         textTransform: 'uppercase',
                       }}>
                         {selectedProduction.venue} &nbsp;·&nbsp; {selectedProduction.year}
@@ -1371,7 +1336,7 @@ export default function Home() {
                       fontSize: 'clamp(1.6rem, 3vw, 2.4rem)',
                       fontWeight: 400,
                       lineHeight: 1.15,
-                      color: '#F5F0E8',
+                      color: 'var(--off-white)',
                       fontFamily: 'Georgia, "Times New Roman", serif',
                       letterSpacing: '-0.01em',
                     }}>
@@ -1383,7 +1348,7 @@ export default function Home() {
                       display: 'inline-flex',
                       alignItems: 'center',
                       gap: '6px',
-                      color: 'rgba(255,255,255,0.35)',
+                      color: 'var(--light-gray',
                       fontSize: '0.7rem',
                       letterSpacing: '0.14em',
                       textTransform: 'uppercase',
@@ -1392,7 +1357,7 @@ export default function Home() {
                     }}>
                       <span style={{
                         width: '5px', height: '5px', borderRadius: '50%',
-                        background: 'rgba(242,190,96,0.5)', flexShrink: 0,
+                        background: 'var(--gold)', flexShrink: 0,
                       }} />
                       {selectedProduction.type}
                     </span>
@@ -1400,7 +1365,7 @@ export default function Home() {
                     {/* description */}
                     <p style={{
                       margin: '0 0 2rem',
-                      color: 'rgba(245,240,232,0.55)',
+                      color: 'var(--light-gray)',
                       fontSize: '0.875rem',
                       lineHeight: 1.75,
                       maxWidth: '42ch',
@@ -1430,16 +1395,15 @@ export default function Home() {
                           borderBottom: '1px solid rgba(255,255,255,0.05)',
                         }}>
                           <span style={{
-                            color: 'rgba(242,190,96,0.6)',
-                            fontSize: '0.65rem',
-                            letterSpacing: '0.15em',
+                            color: 'var(--gold)',
+                            fontSize: '10px',
+                            letterSpacing: '0.3em',
                             textTransform: 'uppercase',
-                            fontWeight: 600,
                           }}>
                             {label}
                           </span>
                           <span style={{
-                            color: 'rgba(245,240,232,0.7)',
+                            color: 'var(--light-gray',
                             fontSize: '0.8rem',
                             letterSpacing: '0.02em',
                           }}>
