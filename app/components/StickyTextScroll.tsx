@@ -163,7 +163,6 @@ export default function StickyScrollIntro() {
           inset: 0;
           z-index: 0;
           overflow: hidden;
-          display: none;
         }
 
         .s_h_bg-img-inner {
@@ -280,7 +279,7 @@ export default function StickyScrollIntro() {
         <section className="h_intro_main" ref={sectionRef}>
           <div className="s_h_bg-img">
             <img
-              src="https://cdn.prod.website-files.com/68b095121300aebde21ab3f4/6984d83b4ad1a367ccb73217_image%20498%20(1).jpg"
+              src="https://images.unsplash.com/photo-1617405207340-954e2e19755c"
               loading="lazy"
               alt=""
               className="s_h_bg-img-inner"
